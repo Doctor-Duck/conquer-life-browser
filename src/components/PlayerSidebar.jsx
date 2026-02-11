@@ -1,7 +1,7 @@
 import React from "react";
 import { BASE_JOBS, BASE_SKILLS, CHARACTER_BACKGROUNDS, STARTING_LOCATIONS, formatMoney, formatTime, getSkillLevel, getCityById, getAreaById } from "../gameCore.js";
 
-export function PlayerSidebar({ state, onAdvanceDay, onSave }) {
+export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkShift }) {
   const p = state.player;
   const currentJob =
     state.currentJobId && BASE_JOBS.find((j) => j.id === state.currentJobId);
@@ -46,8 +46,8 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave }) {
       {/* Location Info */}
       {state.location && (
         <div className="player-sidebar-section">
-          <div className="card-header">
-            <div>
+          <div className="card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+            <div style={{ flex: 1 }}>
               <div className="card-title">Location</div>
               <div className="card-subtitle">
                 {(() => {
@@ -59,19 +59,49 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave }) {
                 })()}
               </div>
             </div>
+            {onNavigate && (
+              <button
+                className="btn btn-outline"
+                onClick={() => onNavigate("travel")}
+                style={{ flexShrink: 0, padding: "6px 12px", fontSize: "0.875rem" }}
+              >
+                Travel
+              </button>
+            )}
           </div>
         </div>
       )}
 
       {/* Current Life Stats */}
       <div className="player-sidebar-section">
-        <div className="card-header">
-          <div>
+        <div className="card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+          <div style={{ flex: 1 }}>
             <div className="card-title">Current Life</div>
             <div className="card-subtitle">
               Age {p.age} · {currentJob ? currentJob.name : "No primary job selected"}
             </div>
           </div>
+          {currentJob && onWorkShift && (
+            <button
+              className="btn btn-primary"
+              onClick={() => onWorkShift(currentJob.id)}
+              disabled={
+                !state.location ||
+                state.location.areaId !== currentJob.areaId ||
+                p.energy < 15
+              }
+              style={{ flexShrink: 0, padding: "6px 12px", fontSize: "0.875rem" }}
+              title={
+                !state.location || state.location.areaId !== currentJob.areaId
+                  ? `You need to be in ${getAreaById(currentJob.areaId)?.name || "the correct location"} to work this shift.`
+                  : p.energy < 15
+                  ? "You need at least 15 energy to work a shift."
+                  : `Work a shift as ${currentJob.name}`
+              }
+            >
+              Work Shift
+            </button>
+          )}
         </div>
 
         <div className="stat-row">

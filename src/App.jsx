@@ -427,6 +427,8 @@ export function App() {
         state={state}
         onAdvanceDay={handleAdvanceDay}
         onSave={handleSave}
+        onNavigate={handleNavigate}
+        onWorkShift={handleWorkShift}
       />
       <SaveNotification
         isVisible={saveNotification.visible}

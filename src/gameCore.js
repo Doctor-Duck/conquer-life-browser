@@ -834,6 +834,16 @@ export function workShift(state, jobId) {
   const job = BASE_JOBS.find((j) => j.id === jobId);
   if (!job) return state;
 
+  // Check if player is in the correct location for this job
+  if (state.location?.areaId !== job.areaId) {
+    const area = getAreaById(job.areaId);
+    pushLog(
+      state,
+      `You need to be in ${area?.name || "the correct location"} to work as ${job.name}.`
+    );
+    return state;
+  }
+
   const { ok, missing } = canTakeJob(state, job);
   if (!ok) {
     pushLog(

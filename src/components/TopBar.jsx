@@ -5,7 +5,6 @@ export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMai
     { id: "jobs", label: "Work" },
     { id: "skills", label: "Training" },
     { id: "assets", label: "Assets" },
-    { id: "travel", label: "Travel" },
     { id: "housing", label: "Housing" },
   ];
 
@@ -16,8 +15,6 @@ export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMai
       ? "Character & Skills"
       : activeView === "assets"
       ? "Assets"
-      : activeView === "travel"
-      ? "Travel"
       : activeView === "housing"
       ? "Housing"
       : "";
@@ -29,8 +26,6 @@ export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMai
       ? "Level up the skills that shape your destiny."
       : activeView === "assets"
       ? "Manage your inventory, businesses, and properties."
-      : activeView === "travel"
-      ? "Explore new locations and opportunities."
       : activeView === "housing"
       ? "Find and upgrade your living space."
       : "";
