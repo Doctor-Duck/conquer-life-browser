@@ -55,17 +55,28 @@ Jobs are categorized as:
 - **Illegal**: High-risk, high-reward activities
 - **Government**: Stable careers with good benefits
 
+**Work Shift Button**: 
+- Accessible from the Player Sidebar Current Life section
+- Validates your location before allowing you to work
+- Disabled when you're in the wrong location or lack energy
+- Provides quick access to work your current job
+
 #### Businesses
 Start and manage businesses for passive income:
 - **Legal Businesses**: Restaurants, retail stores, law firms
 - **Illegal Businesses**: Black market operations, smuggling networks
 - Each business requires specific skills and capital to start
 - Businesses generate daily profits (with variance) after expenses
+- **Multi-City Ownership**: Own the same business type in multiple cities and areas
+- Businesses are grouped by city in the Assets view with collapsible sections
+- View total upkeep and net profit per day for each city
 
 #### Travel System
 - Travel between cities and areas within cities
 - Each travel action has a cooldown period
 - Different areas offer different job and business opportunities
+- Travel button is accessible from the Player Sidebar Location section
+- Location validation ensures you're in the right place for actions
 
 #### Time & Energy System
 - **Time System**: Track time throughout the day (9:00 AM - 11:59 PM)
@@ -79,6 +90,7 @@ Start and manage businesses for passive income:
 - **Manual Save**: Save your progress at any time
 - **Load Game**: Resume from any saved slot
 - **Settings Persistence**: Game settings saved locally
+- **Cheat Indicators**: Save files show indicators when cheats have been used
 
 ### Game Mechanics
 
@@ -88,6 +100,29 @@ Start and manage businesses for passive income:
   - Legal costs and cleanup fees reduce notoriety
 - **Respect**: Earned through achievements and accomplishments
   - Build your reputation in the game world
+
+#### Journal System
+Track your progress and accomplishments through the Journal tab in the Player Sidebar:
+- **Recent Events**: View the last 30 game events with timestamps
+- **Missions**: Track active missions and objectives (coming soon)
+- **Achievements**: View unlocked achievements and track your accomplishments
+  - Achievements are permanently disabled when cheats are enabled
+  - Cheat indicators show when achievements are disabled
+
+#### Cheat System
+A comprehensive cheat menu for testing and experimentation:
+- **Access**: Toggle cheat menu in Settings (per save file)
+- **Cash Cheats**: Add money in various amounts
+- **Energy Cheats**: Enable unlimited energy that persists across sessions
+- **Business Cheats**: 
+  - Unlock all businesses in a specific city
+  - Unlock all businesses in all cities
+- **Skill Cheats**: Increase skill levels or max all skills instantly
+- **Cheat State**: 
+  - Cheat usage is tracked per save file
+  - Save files display cheat indicators
+  - Enabling cheats permanently disables achievements for that save
+  - Cheat state persists across game sessions
 
 #### Health & Money
 - **Health**: Decreases if you go into debt
@@ -156,6 +191,7 @@ conquer-life-browser/
 ├── src/
 │   ├── components/       # React components
 │   │   ├── CharacterCreator.jsx
+│   │   ├── CheatMenu.jsx
 │   │   ├── LoadGameView.jsx
 │   │   ├── MainMenu.jsx
 │   │   ├── NewGameView.jsx
@@ -193,6 +229,9 @@ conquer-life-browser/
 5. **Balance Energy**: Don't exhaust yourself - manage your time and energy
 6. **Travel Smart**: Different areas offer different opportunities
 7. **Save Often**: Use multiple save slots to experiment with different strategies
+8. **Expand Your Empire**: Own the same business in multiple cities to maximize passive income
+9. **Use Location Validation**: The Work Shift button validates your location - make sure you're in the right area
+10. **Track Your Progress**: Check the Journal tab regularly to review events and achievements
 
 ## 🔮 Future Features
 
@@ -203,8 +242,9 @@ Potential additions and improvements:
 - Inventory and item management
 - Relationships and NPCs
 - Random events and storylines
-- Achievements and milestones
+- More achievements and milestones
 - Leaderboards and statistics
+- Mission system implementation
 
 ## 📝 License
 
