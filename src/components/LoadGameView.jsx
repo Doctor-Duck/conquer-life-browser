@@ -133,10 +133,18 @@ export function LoadGameView({ onLoad, onCancel, onSetDefault }) {
                         </>
                       ) : (
                         <>
-                          <div className="load-game-slot-name">{slot.characterName}</div>
+                          <div className="load-game-slot-name">
+                            {slot.characterName}
+                            {slot.cheatsEnabled && <span style={{ marginLeft: "6px" }}>⚠️</span>}
+                          </div>
                           <div className="load-game-slot-details">
                             Day {slot.day} · {formatMoney(slot.money)}
                           </div>
+                          {slot.cheatsEnabled && (
+                            <div className="load-game-slot-cheats" style={{ marginTop: "4px", color: "#f87171", fontSize: "12px" }}>
+                              ⚠️ Cheats were used - Achievements disabled
+                            </div>
+                          )}
                           <div className="load-game-slot-time">
                             Last saved: {formatLastSaved(slot.lastSaved)}
                           </div>

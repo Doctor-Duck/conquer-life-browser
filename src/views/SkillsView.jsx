@@ -109,13 +109,13 @@ export function SkillsView({ state, onTrainSkill, onTrainSkillToNextLevel }) {
                 <div className="skill-card-footer">
                   <div className="skill-card-buttons">
                     <button
-                      className={`btn btn-primary skill-train-button ${
+                      className={`btn ${isMaxed ? "btn-outline" : "btn-primary"} skill-train-button ${
                         isMaxed ? "disabled" : ""
                       }`}
                       onClick={() => onTrainSkill(skill.id)}
                       disabled={isMaxed}
                     >
-                      {isMaxed ? "Maxed Out" : `Train (${formatMoney(cost)})`}
+                      {isMaxed ? "Maxed" : `Train (${formatMoney(cost)})`}
                     </button>
                     {!isMaxed && trainToNext.sessions > 0 && (
                       <button

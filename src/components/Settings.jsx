@@ -1,9 +1,34 @@
 import React from "react";
-import { loadSettings, saveSettings, getAllSaveSlots, MAX_SAVE_SLOTS } from "../gameCore.js";
+import { loadSettings, saveSettings, getAllSaveSlots, MAX_SAVE_SLOTS, loadGameState } from "../gameCore.js";
 
-export function Settings({ onClose }) {
+export function Settings({ onClose, currentSaveSlot, onCheatToggleChange }) {
   const [settings, setSettings] = React.useState(() => loadSettings());
   const [saveSlots, setSaveSlots] = React.useState(() => getAllSaveSlots());
+  
+  // Get cheat state from current save
+  const [cheatState, setCheatState] = React.useState(() => {
+    if (currentSaveSlot) {
+      const save = loadGameState(currentSaveSlot);
+      return {
+        showCheatMenu: save?.cheats?.showCheatMenu || false,
+        achievementsEnabled: save?.cheats?.achievementsEnabled !== false, // Default to true if not set
+      };
+    }
+    return { showCheatMenu: false, achievementsEnabled: true };
+  });
+
+  // Update cheat state when save slot changes
+  React.useEffect(() => {
+    if (currentSaveSlot) {
+      const save = loadGameState(currentSaveSlot);
+      setCheatState({
+        showCheatMenu: save?.cheats?.showCheatMenu || false,
+        achievementsEnabled: save?.cheats?.achievementsEnabled !== false,
+      });
+    } else {
+      setCheatState({ showCheatMenu: false, achievementsEnabled: true });
+    }
+  }, [currentSaveSlot]);
 
   const handleToggle = (key) => {
     const newSettings = {
@@ -32,6 +57,38 @@ export function Settings({ onClose }) {
     };
     setSettings(newSettings);
     saveSettings(newSettings);
+  };
+
+  const handleCheatMenuToggle = () => {
+    if (!currentSaveSlot) {
+      // eslint-disable-next-line no-alert
+      alert("Please load a save game first to enable/disable cheats.");
+      return;
+    }
+
+    const newValue = !cheatState.showCheatMenu;
+    
+    // Only show warning if achievements are still enabled (meaning cheats were never used before)
+    // Once achievements are disabled, never show the warning again
+    if (newValue && cheatState.achievementsEnabled !== false) {
+      const confirmMessage = 
+        "⚠️ WARNING: Enabling cheats will disable achievements for this save.\n\n" +
+        "Once cheats are enabled, you will not be able to earn achievements in this save file. " +
+        "This cannot be undone.\n\n" +
+        "Do you want to continue?";
+      
+      // eslint-disable-next-line no-alert
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+    }
+
+    setCheatState((prev) => ({ ...prev, showCheatMenu: newValue }));
+    
+    // Notify parent to update save
+    if (onCheatToggleChange) {
+      onCheatToggleChange(newValue);
+    }
   };
 
   return (
@@ -143,6 +200,36 @@ export function Settings({ onClose }) {
               <option value="3">Every 3 minutes</option>
               <option value="5">Every 5 minutes</option>
             </select>
+          </div>
+
+          <div className="settings-item">
+            <div className="settings-item-info">
+              <div className="settings-item-label">Show Cheat Menu</div>
+              <div className="settings-item-desc">
+                {currentSaveSlot ? (
+                  <>
+                    {cheatState.achievementsEnabled === false ? (
+                      <>
+                        <strong style={{ color: "#f87171" }}>Cheats were turned on in this save.</strong> Achievements are disabled.
+                      </>
+                    ) : (
+                      "Enable the cheat menu button in the game view. Enabling this will disable achievements for this save."
+                    )}
+                  </>
+                ) : (
+                  "Load a save game to enable or disable cheats."
+                )}
+              </div>
+            </div>
+            <label className="settings-toggle">
+              <input
+                type="checkbox"
+                checked={cheatState.showCheatMenu}
+                onChange={handleCheatMenuToggle}
+                disabled={!currentSaveSlot}
+              />
+              <span className="settings-toggle-slider" />
+            </label>
           </div>
         </div>
 

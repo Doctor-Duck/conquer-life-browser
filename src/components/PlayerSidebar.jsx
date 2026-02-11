@@ -1,11 +1,13 @@
 import React from "react";
 import { BASE_JOBS, BASE_SKILLS, CHARACTER_BACKGROUNDS, STARTING_LOCATIONS, formatMoney, formatTime, getSkillLevel, getCityById, getAreaById } from "../gameCore.js";
+import { SmartTooltip } from "./SmartTooltip.jsx";
 
 export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkShift }) {
   const p = state.player;
   const currentJob =
     state.currentJobId && BASE_JOBS.find((j) => j.id === state.currentJobId);
-  const [journalView, setJournalView] = React.useState("events"); // "events" or "missions"
+  const [journalView, setJournalView] = React.useState("events"); // "events", "missions", or "achievements"
+  const [cheatEmojiHovered, setCheatEmojiHovered] = React.useState(false);
 
   return (
     <aside className="player-sidebar">
@@ -30,6 +32,20 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkS
             <div>
               <div className="card-title">
                 {p.fullName || p.name || "Unknown"}
+                {state.cheats?.achievementsEnabled === false && (
+                  <SmartTooltip
+                    visible={cheatEmojiHovered}
+                    content="Cheats were turned on in this save. Achievements are disabled."
+                  >
+                    <span
+                      style={{ marginLeft: "6px", cursor: "help" }}
+                      onMouseEnter={() => setCheatEmojiHovered(true)}
+                      onMouseLeave={() => setCheatEmojiHovered(false)}
+                    >
+                      ⚠️
+                    </span>
+                  </SmartTooltip>
+                )}
               </div>
               <div className="card-subtitle">
                 {state.character?.background && (
@@ -232,6 +248,12 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkS
               >
                 Missions
               </button>
+              <button
+                className={`journal-tab ${journalView === "achievements" ? "active" : ""}`}
+                onClick={() => setJournalView("achievements")}
+              >
+                Achievements
+              </button>
             </div>
           </div>
         </div>
@@ -257,8 +279,23 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkS
                   </div>
                 ))
             )
-          ) : (
+          ) : journalView === "missions" ? (
             <div className="chat-empty-state">No active missions yet.</div>
+          ) : (
+            <div className="chat-empty-state">
+              {state.cheats?.achievementsEnabled === false ? (
+                <div>
+                  <div style={{ marginBottom: "8px", color: "#f87171" }}>
+                    Achievements are disabled for this save.
+                  </div>
+                  <div style={{ fontSize: "12px", color: "#94a3b8" }}>
+                    Cheats have been enabled, which disables achievement tracking.
+                  </div>
+                </div>
+              ) : (
+                "No achievements unlocked yet."
+              )}
+            </div>
           )}
         </div>
       </div>

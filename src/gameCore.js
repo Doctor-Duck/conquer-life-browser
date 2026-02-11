@@ -450,6 +450,11 @@ export function createNewGameState(characterData = null) {
     ownedBusinesses: [],
     activeView: "jobs",
     jobsFilter: "all",
+    cheats: {
+      unlimitedEnergy: false,
+      showCheatMenu: false,
+      achievementsEnabled: true,
+    },
     log: [
       {
         day: 1,
@@ -520,6 +525,24 @@ export function loadGameState(slotNumber = null) {
       });
     }
     
+    // Ensure cheats object exists
+    if (!state.cheats) {
+      state.cheats = {
+        unlimitedEnergy: false,
+        showCheatMenu: false,
+        achievementsEnabled: true,
+      };
+    } else {
+      // Migrate old cheat state
+      if (state.cheats.achievementsEnabled === undefined) {
+        // If showCheatMenu was enabled, achievements should be disabled
+        state.cheats.achievementsEnabled = !state.cheats.showCheatMenu;
+      }
+      if (state.cheats.showCheatMenu === undefined) {
+        state.cheats.showCheatMenu = false;
+      }
+    }
+    
     return state;
   } catch {
     return null;
@@ -563,6 +586,8 @@ export function getAllSaveSlots() {
           day: parsed.currentDay || 1,
           lastSaved: parsed.lastSaved || 0,
           money: parsed.player?.money || 0,
+          // Cheats were used if achievements are disabled (once disabled, they stay disabled)
+          cheatsEnabled: parsed.cheats?.achievementsEnabled === false,
         });
       }
     } catch {
@@ -646,6 +671,8 @@ const EXP_MULTIPLIER = 1.1; // Exponential growth multiplier
 export function getExpForLevel(level) {
   if (level <= 1) return 0;
   let totalExp = 0;
+  // Calculate EXP for each level transition from 1 to level-1
+  // This gives us the total EXP needed to reach the target level
   for (let i = 1; i < level; i++) {
     totalExp += BASE_EXP * Math.pow(EXP_MULTIPLIER, i - 1);
   }
@@ -656,9 +683,16 @@ export function getExpForLevel(level) {
 export function getLevelFromExp(totalExp) {
   if (totalExp <= 0) return 1;
   
+  // Check if we have enough EXP for max level first
+  const expForMaxLevel = getExpForLevel(MAX_SKILL_LEVEL);
+  if (totalExp >= expForMaxLevel) {
+    return MAX_SKILL_LEVEL;
+  }
+  
   let level = 1;
   let expNeeded = 0;
   
+  // Calculate level by accumulating EXP needed for each level transition
   while (level < MAX_SKILL_LEVEL) {
     const expForNextLevel = BASE_EXP * Math.pow(EXP_MULTIPLIER, level - 1);
     if (expNeeded + expForNextLevel > totalExp) {
@@ -668,7 +702,7 @@ export function getLevelFromExp(totalExp) {
     level++;
   }
   
-  return Math.min(level, MAX_SKILL_LEVEL);
+  return level;
 }
 
 // Get current skill level from EXP
@@ -815,9 +849,14 @@ export function canStartBusiness(state, biz) {
   if (!ok) {
     return { ok: false, reason: "Skills too low", missing };
   }
-  const already = state.ownedBusinesses.find((b) => b.id === biz.id);
+  // Check if business is already owned in the same city/area combination
+  const currentCityId = state.location?.cityId;
+  const currentAreaId = state.location?.areaId || biz.areaId;
+  const already = state.ownedBusinesses.find(
+    (b) => b.id === biz.id && b.cityId === currentCityId && b.areaId === currentAreaId
+  );
   if (already) {
-    return { ok: false, reason: "You already own this business" };
+    return { ok: false, reason: "You already own this business in this location" };
   }
   return { ok: true };
 }
@@ -863,7 +902,8 @@ export function workShift(state, jobId) {
     return state;
   }
 
-  if (state.player.energy < 15) {
+  // Check energy requirement (bypass if unlimited energy cheat is enabled)
+  if (!state.cheats?.unlimitedEnergy && state.player.energy < 15) {
     pushLog(
       state,
       "You're too exhausted to work another shift. Get some rest first."
@@ -874,7 +914,12 @@ export function workShift(state, jobId) {
   const income = job.incomePerShift;
   const energyCost = 20;
   state.player.money += income;
-  state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+  // Only decrease energy if unlimited energy cheat is not enabled
+  if (!state.cheats?.unlimitedEnergy) {
+    state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+  } else {
+    state.player.energy = 100; // Keep at max if unlimited energy is enabled
+  }
   
   // Advance time based on energy cost
   advanceTime(state, energyCost);
@@ -960,7 +1005,8 @@ export function trainSkill(state, skillId) {
   const baseMoneyCost = 30;
   const moneyCost = baseMoneyCost + currentLevel * 5;
 
-  if (state.player.energy < energyCost) {
+  // Check energy requirement (bypass if unlimited energy cheat is enabled)
+  if (!state.cheats?.unlimitedEnergy && state.player.energy < energyCost) {
     pushLog(state, "You're too tired to train right now.");
     return state;
   }
@@ -972,7 +1018,12 @@ export function trainSkill(state, skillId) {
     return state;
   }
 
-  state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+  // Only decrease energy if unlimited energy cheat is not enabled
+  if (!state.cheats?.unlimitedEnergy) {
+    state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+  } else {
+    state.player.energy = 100; // Keep at max if unlimited energy is enabled
+  }
   state.player.money -= moneyCost;
   
   // Calculate EXP gained: money spent determines EXP (1 EXP per $1 spent, with slight diminishing returns at higher levels)
@@ -1048,17 +1099,25 @@ export function trainSkillToNextLevel(state, skillId) {
       return state;
     }
     
-    // If we don't have enough energy, advance the day to rest
-    if (state.player.energy < energyCost) {
+    // If we don't have enough energy, advance the day to rest (unless unlimited energy is enabled)
+    if (!state.cheats?.unlimitedEnergy && state.player.energy < energyCost) {
       // Advance day to rest and restore energy
       advanceDay(state);
       // Fully restore energy after resting
       state.player.energy = 100;
       pushLog(state, `You rest for the night and wake up refreshed, ready to continue training.`);
+    } else if (state.cheats?.unlimitedEnergy) {
+      // Keep energy at max if unlimited energy is enabled
+      state.player.energy = 100;
     }
     
     state.player.money -= moneyCost;
-    state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+    // Only decrease energy if unlimited energy cheat is not enabled
+    if (!state.cheats?.unlimitedEnergy) {
+      state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+    } else {
+      state.player.energy = 100; // Keep at max if unlimited energy is enabled
+    }
     totalCost += moneyCost;
     totalExpGained += expGained;
     sessions++;
@@ -1166,7 +1225,12 @@ export function advanceDay(state) {
     }
   }
 
-  state.player.energy = clamp(state.player.energy + 30, 0, 100);
+  // Only increase energy if unlimited energy cheat is not enabled (it will stay at 100 anyway)
+  if (!state.cheats?.unlimitedEnergy) {
+    state.player.energy = clamp(state.player.energy + 30, 0, 100);
+  } else {
+    state.player.energy = 100; // Keep at max if unlimited energy is enabled
+  }
 
   if (state.player.notoriety > 40 && Math.random() < 0.1) {
     const penalty = Math.min(state.player.money, 200);
@@ -1250,7 +1314,8 @@ export function travelToLocation(state, cityId, areaId) {
     return { success: false, state };
   }
 
-  if (!isInterCity && state.player.energy < energyCost) {
+  // Check energy requirement (bypass if unlimited energy cheat is enabled)
+  if (!isInterCity && !state.cheats?.unlimitedEnergy && state.player.energy < energyCost) {
     pushLog(state, `You need ${energyCost} energy to travel within the city. You're too tired.`);
     return { success: false, state };
   }
@@ -1276,8 +1341,14 @@ export function travelToLocation(state, cityId, areaId) {
     return { success: true, state, shouldAutoSave: true };
   } else {
     // Intra-city travel: use energy
-    state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
-    pushLog(state, `You travel to the ${area.name} in ${city.name}. Cost: $${travelCost}, Energy: -${energyCost}`);
+    // Only decrease energy if unlimited energy cheat is not enabled
+    if (!state.cheats?.unlimitedEnergy) {
+      state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+      pushLog(state, `You travel to the ${area.name} in ${city.name}. Cost: $${travelCost}, Energy: -${energyCost}`);
+    } else {
+      state.player.energy = 100; // Keep at max if unlimited energy is enabled
+      pushLog(state, `You travel to the ${area.name} in ${city.name}. Cost: $${travelCost}`);
+    }
     return { success: true, state, shouldAutoSave: false };
   }
 }

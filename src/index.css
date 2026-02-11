@@ -1451,6 +1451,89 @@ body {
   padding-top: 4px;
 }
 
+/* City Business Sections */
+.businesses-by-city {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.city-business-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.city-business-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 16px;
+}
+
+.city-business-header:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.city-business-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.city-business-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e0e7ff;
+}
+
+.city-business-count {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.city-business-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.city-business-totals {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.city-business-total-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.city-business-total-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.city-business-toggle {
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
 .business-start-button {
   width: 100%;
   justify-content: center;
@@ -2326,6 +2409,121 @@ body {
   margin-top: 32px;
   padding-top: 24px;
   border-top: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+/* Cheat Menu */
+.cheat-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.cheat-menu {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.cheat-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+.cheat-menu-header h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #e0e7ff;
+}
+
+.cheat-menu-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(31, 41, 55, 0.6);
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.cheat-menu-close:hover {
+  background: rgba(31, 41, 55, 0.9);
+  color: #e5e7eb;
+}
+
+.cheat-menu-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.cheat-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cheat-section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #e0e7ff;
+  margin-bottom: 8px;
+}
+
+.cheat-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cheat-skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cheat-skill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(31, 41, 55, 0.4);
+  border-radius: 8px;
+  gap: 12px;
+}
+
+.cheat-skill-name {
+  flex: 1;
+  font-size: 14px;
+  color: #e5e7eb;
+  font-weight: 500;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 12px;
 }
 
 /* Top Bar Menu Buttons */

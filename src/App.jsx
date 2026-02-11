@@ -7,6 +7,7 @@ import { Settings } from "./components/Settings.jsx";
 import { LoadGameView } from "./components/LoadGameView.jsx";
 import { NewGameView } from "./components/NewGameView.jsx";
 import { SaveNotification } from "./components/SaveNotification.jsx";
+import { CheatMenu } from "./components/CheatMenu.jsx";
 import { JobsView } from "./views/JobsView.jsx";
 import { SkillsView } from "./views/SkillsView.jsx";
 import { AssetsView } from "./views/AssetsView.jsx";
@@ -43,6 +44,7 @@ export function App() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(false);
   const [saveNotification, setSaveNotification] = React.useState({ visible: false, isAutoSave: false });
   const [travelCooldown, setTravelCooldown] = React.useState(0);
+  const [showCheatMenu, setShowCheatMenu] = React.useState(false);
   const autoSaveTimerRef = React.useRef(null);
   const travelCooldownTimerRef = React.useRef(null);
 
@@ -267,6 +269,24 @@ export function App() {
       loadedState.activeView = loadedState.activeView === "businesses" ? "jobs" : "assets";
     }
     
+    // Ensure cheats object exists and initialize achievementsEnabled if not set
+    if (!loadedState.cheats) {
+      loadedState.cheats = {
+        unlimitedEnergy: false,
+        showCheatMenu: false,
+        achievementsEnabled: true,
+      };
+    } else {
+      // If cheats were used (showCheatMenu is true), ensure achievements are disabled
+      if (loadedState.cheats.showCheatMenu && loadedState.cheats.achievementsEnabled !== false) {
+        loadedState.cheats.achievementsEnabled = false;
+      }
+      // If achievementsEnabled is not set, default to true (unless cheats are enabled)
+      if (loadedState.cheats.achievementsEnabled === undefined) {
+        loadedState.cheats.achievementsEnabled = !loadedState.cheats.showCheatMenu;
+      }
+    }
+    
     setState({ ...loadedState, currentSaveSlot: slotNumber });
     setCurrentSaveSlot(slotNumber);
     setLastSaved(loadedState.lastSaved || Date.now());
@@ -311,6 +331,48 @@ export function App() {
     }
     setAppView("menu");
   };
+
+  const handleShowCheatMenu = () => {
+    setShowCheatMenu(true);
+  };
+
+  const handleCloseCheatMenu = () => {
+    setShowCheatMenu(false);
+  };
+
+  const handleApplyCheat = React.useCallback((updater) => {
+    updateState(updater);
+  }, [updateState]);
+
+  const handleCheatToggleChange = React.useCallback((enabled) => {
+    if (!state || !currentSaveSlot) return;
+    
+    updateState((s) => {
+      if (!s.cheats) {
+        s.cheats = {};
+      }
+      s.cheats.showCheatMenu = enabled;
+      // Disable achievements when cheats are enabled (and never re-enable them)
+      if (enabled) {
+        s.cheats.achievementsEnabled = false;
+      }
+      // Note: We don't re-enable achievements when disabling cheats - once disabled, they stay disabled
+      return s;
+    });
+    
+    // Save immediately
+    const updatedState = { ...state };
+    if (!updatedState.cheats) {
+      updatedState.cheats = {};
+    }
+    updatedState.cheats.showCheatMenu = enabled;
+    // If enabling cheats, disable achievements permanently
+    if (enabled) {
+      updatedState.cheats.achievementsEnabled = false;
+    }
+    // If disabling cheats, keep achievements disabled (don't change achievementsEnabled)
+    saveGameState(updatedState, currentSaveSlot);
+  }, [state, currentSaveSlot, updateState]);
 
   // Render menu views
   if (appView === "menu") {
@@ -363,6 +425,8 @@ export function App() {
       <div className="app-shell app-shell-menu">
         <Settings
           onClose={state ? handleCloseSettings : () => setAppView("menu")}
+          currentSaveSlot={state ? currentSaveSlot : null}
+          onCheatToggleChange={handleCheatToggleChange}
         />
       </div>
     );
@@ -392,6 +456,8 @@ export function App() {
           onNavigate={handleNavigate}
           onShowMainMenu={handleShowMainMenu}
           onShowSettings={handleShowSettings}
+          onShowCheatMenu={handleShowCheatMenu}
+          showCheatMenu={state.cheats?.showCheatMenu || false}
         />
         {view === "jobs" && (
           <JobsView
@@ -435,6 +501,13 @@ export function App() {
         isAutoSave={saveNotification.isAutoSave}
         onClose={() => setSaveNotification({ visible: false, isAutoSave: false })}
       />
+      {showCheatMenu && state && (
+        <CheatMenu
+          state={state}
+          onClose={handleCloseCheatMenu}
+          onApplyCheat={handleApplyCheat}
+        />
+      )}
     </div>
   );
 }

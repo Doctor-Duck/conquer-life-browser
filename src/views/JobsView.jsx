@@ -253,7 +253,12 @@ export function JobsView({ state, onChangeFilter, onWorkShift, onStartBusiness }
         {activeTab === "businesses" && (
           <div className="businesses-grid-new">
               {areaBusinesses.map((biz) => {
-                const owned = state.ownedBusinesses.some((b) => b.id === biz.id);
+                // Check if business is owned in current location
+                const currentCityId = state.location?.cityId;
+                const currentAreaId = state.location?.areaId || biz.areaId;
+                const owned = state.ownedBusinesses.some(
+                  (b) => b.id === biz.id && b.cityId === currentCityId && b.areaId === currentAreaId
+                );
                 const { ok } = canStartBusiness(state, biz);
                 const disabled = owned || !ok;
                 const canSeeDetails = canSeeBusinessDetails(state, biz);

@@ -1,6 +1,6 @@
 import React from "react";
 
-export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMainMenu, onShowSettings }) {
+export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMainMenu, onShowSettings, onShowCheatMenu, showCheatMenu }) {
   const tabs = [
     { id: "jobs", label: "Work" },
     { id: "skills", label: "Training" },
@@ -48,6 +48,15 @@ export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMai
           >
             Menu
           </button>
+          {showCheatMenu && (
+            <button
+              className="top-bar-menu-btn"
+              onClick={onShowCheatMenu}
+              title="Cheat Menu"
+            >
+              Cheats
+            </button>
+          )}
           <button
             className="top-bar-menu-btn"
             onClick={onShowSettings}
