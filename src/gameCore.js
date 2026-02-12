@@ -1,369 +1,68 @@
-// Core data models and game logic, adapted for React usage.
+// Core game logic; data lives in ./data/
 
-export const JOB_CATEGORIES = {
-  LEGAL: "legal",
-  ILLEGAL: "illegal",
-  GOVERNMENT: "government",
+import {
+  SKILL_IDS,
+  BASE_SKILLS,
+  SAVE_KEY_PREFIX,
+  SAVE_KEY,
+  SETTINGS_KEY,
+  MAX_SAVE_SLOTS,
+  START_TIME_MINUTES,
+  MAX_SKILL_LEVEL,
+  BASE_EXP,
+  EXP_MULTIPLIER,
+  SHIFT_CATEGORIES,
+  SHIFTS,
+  SHIFT_QUALITIES,
+  SHIFT_QUALITY_RARITIES,
+  SHIFT_EVENTS,
+  BASE_BUSINESSES,
+  CITY_AREAS,
+  CITIES,
+  STARTING_LOCATIONS,
+  CHARACTER_BACKGROUNDS,
+  EQUIPMENT_SLOTS,
+  ITEM_CATEGORIES,
+  EQUIPMENT_SLOT_CATEGORY,
+  BASE_ITEMS,
+  SHOP_ITEMS,
+} from "./data/index.js";
+
+// Re-export data so existing imports from gameCore still work
+export {
+  SKILL_IDS,
+  BASE_SKILLS,
+  SHIFT_CATEGORIES,
+  SHIFTS,
+  SHIFT_QUALITIES,
+  SHIFT_QUALITY_RARITIES,
+  SHIFT_EVENTS,
+  BASE_BUSINESSES,
+  CITY_AREAS,
+  CITIES,
+  STARTING_LOCATIONS,
+  CHARACTER_BACKGROUNDS,
+  EQUIPMENT_SLOTS,
+  ITEM_CATEGORIES,
+  EQUIPMENT_SLOT_CATEGORY,
+  BASE_ITEMS,
+  SHOP_ITEMS,
+  SAVE_KEY_PREFIX,
+  SAVE_KEY,
+  SETTINGS_KEY,
+  MAX_SAVE_SLOTS,
+  MAX_SKILL_LEVEL,
 };
 
-export const SKILL_IDS = {
-  STRENGTH: "strength",
-  INTELLIGENCE: "intelligence",
-  CHARISMA: "charisma",
-  STREET_SMARTS: "street_smarts",
-  LAW: "law",
-  BUSINESS: "business",
-};
-
-export const BASE_SKILLS = [
-  { id: SKILL_IDS.STRENGTH, name: "Strength" },
-  { id: SKILL_IDS.INTELLIGENCE, name: "Intelligence" },
-  { id: SKILL_IDS.CHARISMA, name: "Charisma" },
-  { id: SKILL_IDS.STREET_SMARTS, name: "Street Smarts" },
-  { id: SKILL_IDS.LAW, name: "Law" },
-  { id: SKILL_IDS.BUSINESS, name: "Business" },
-];
-
-// Jobs are now area-specific
-// Each job has an areaId that determines where it's available
-export const BASE_JOBS = [
-  // Metropolis Area Jobs
-  {
-    id: "fast_food_worker",
-    name: "Fast Food Worker",
-    category: JOB_CATEGORIES.LEGAL,
-    areaId: "metropolis",
-    description: "Flip burgers, mop floors, and deal with impatient customers.",
-    incomePerShift: 60,
-    risk: 0,
-    requiredSkills: {},
-  },
-  {
-    id: "drug_dealer",
-    name: "Street Dealer",
-    category: JOB_CATEGORIES.ILLEGAL,
-    areaId: "metropolis",
-    description: "Move product in the shadows for big, risky payouts.",
-    incomePerShift: 280,
-    risk: 40,
-    requiredSkills: {
-      [SKILL_IDS.STREET_SMARTS]: 8,
-      [SKILL_IDS.CHARISMA]: 4,
-    },
-  },
-  // Suburbs Area Jobs
-  {
-    id: "farm_hand",
-    name: "Farm Hand",
-    category: JOB_CATEGORIES.LEGAL,
-    areaId: "suburbs",
-    description: "Work the fields, care for animals, and get paid in sweat.",
-    incomePerShift: 75,
-    risk: 0,
-    requiredSkills: { [SKILL_IDS.STRENGTH]: 5 },
-  },
-  // Industrial Area Jobs
-  {
-    id: "factory_worker",
-    name: "Factory Worker",
-    category: JOB_CATEGORIES.LEGAL,
-    areaId: "industrial",
-    description: "Work the assembly line, clock in, clock out, repeat.",
-    incomePerShift: 90,
-    risk: 5,
-    requiredSkills: { [SKILL_IDS.STRENGTH]: 3 },
-  },
-  {
-    id: "warehouse_worker",
-    name: "Warehouse Worker",
-    category: JOB_CATEGORIES.LEGAL,
-    areaId: "industrial",
-    description: "Move boxes, load trucks, and keep the supply chain moving.",
-    incomePerShift: 85,
-    risk: 3,
-    requiredSkills: { [SKILL_IDS.STRENGTH]: 4 },
-  },
-  {
-    id: "arms_seller",
-    name: "Illegal Arms Seller",
-    category: JOB_CATEGORIES.ILLEGAL,
-    areaId: "industrial",
-    description: "Supply weapons to people you hope to never meet again.",
-    incomePerShift: 450,
-    risk: 65,
-    requiredSkills: {
-      [SKILL_IDS.STREET_SMARTS]: 12,
-      [SKILL_IDS.BUSINESS]: 8,
-    },
-  },
-  // Downtown Area Jobs
-  {
-    id: "police_officer",
-    name: "Police Officer",
-    category: JOB_CATEGORIES.GOVERNMENT,
-    areaId: "downtown",
-    description: "Protect the city, enforce the law, and survive the politics.",
-    incomePerShift: 160,
-    risk: 15,
-    requiredSkills: {
-      [SKILL_IDS.STRENGTH]: 7,
-      [SKILL_IDS.LAW]: 5,
-    },
-  },
-  {
-    id: "lawyer",
-    name: "Lawyer",
-    category: JOB_CATEGORIES.GOVERNMENT,
-    areaId: "downtown",
-    description: "Turn words and loopholes into money and influence.",
-    incomePerShift: 260,
-    risk: 0,
-    requiredSkills: {
-      [SKILL_IDS.INTELLIGENCE]: 10,
-      [SKILL_IDS.LAW]: 10,
-      [SKILL_IDS.CHARISMA]: 6,
-    },
-  },
-  {
-    id: "governor",
-    name: "Governor",
-    category: JOB_CATEGORIES.GOVERNMENT,
-    areaId: "downtown",
-    description: "Run the state. Or let donors run it for you.",
-    incomePerShift: 500,
-    risk: 5,
-    requiredSkills: {
-      [SKILL_IDS.INTELLIGENCE]: 14,
-      [SKILL_IDS.CHARISMA]: 14,
-      [SKILL_IDS.LAW]: 12,
-      [SKILL_IDS.BUSINESS]: 10,
-    },
-  },
-];
-
-// Businesses are now area-specific
-export const BASE_BUSINESSES = [
-  // Metropolis Area Businesses
-  {
-    id: "food_truck",
-    name: "Food Truck",
-    legality: "legal",
-    areaId: "metropolis",
-    description: "Park, cook, and hustle the lunch crowd.",
-    costToStart: 4000,
-    upkeepPerDay: 80,
-    expectedProfitPerDay: 200,
-    requiredSkills: {
-      [SKILL_IDS.BUSINESS]: 5,
-    },
-  },
-  {
-    id: "nightclub",
-    name: "Nightclub",
-    legality: "mixed",
-    areaId: "metropolis",
-    description: "Loud music, high margins, and even higher risks.",
-    costToStart: 12000,
-    upkeepPerDay: 280,
-    expectedProfitPerDay: 600,
-    requiredSkills: {
-      [SKILL_IDS.BUSINESS]: 10,
-      [SKILL_IDS.CHARISMA]: 10,
-    },
-  },
-  // Suburbs Area Businesses
-  {
-    id: "convenience_store",
-    name: "Convenience Store",
-    legality: "legal",
-    areaId: "suburbs",
-    description: "A neighborhood staple, open late for the community.",
-    costToStart: 3500,
-    upkeepPerDay: 70,
-    expectedProfitPerDay: 180,
-    requiredSkills: {
-      [SKILL_IDS.BUSINESS]: 4,
-    },
-  },
-  // Industrial Area Businesses
-  {
-    id: "warehouse_business",
-    name: "Warehouse Business",
-    legality: "legal",
-    areaId: "industrial",
-    description: "Store and distribute goods for profit.",
-    costToStart: 8000,
-    upkeepPerDay: 150,
-    expectedProfitPerDay: 350,
-    requiredSkills: {
-      [SKILL_IDS.BUSINESS]: 8,
-    },
-  },
-  {
-    id: "black_market_network",
-    name: "Black Market Network",
-    legality: "illegal",
-    areaId: "industrial",
-    description: "Move anything, anywhere, for the right price.",
-    costToStart: 18000,
-    upkeepPerDay: 650,
-    expectedProfitPerDay: 1600,
-    requiredSkills: {
-      [SKILL_IDS.STREET_SMARTS]: 14,
-      [SKILL_IDS.BUSINESS]: 12,
-    },
-  },
-  // Downtown Area Businesses
-  {
-    id: "law_firm",
-    name: "Law Firm",
-    legality: "legal",
-    areaId: "downtown",
-    description: "Bill by the hour and weaponize paperwork.",
-    costToStart: 20000,
-    upkeepPerDay: 500,
-    expectedProfitPerDay: 1100,
-    requiredSkills: {
-      [SKILL_IDS.LAW]: 14,
-      [SKILL_IDS.BUSINESS]: 12,
-    },
-  },
-];
-
-// City Areas (same for all cities)
-export const CITY_AREAS = [
-  {
-    id: "metropolis",
-    name: "Metropolis",
-    description: "A bustling city where opportunity and danger walk hand in hand.",
-  },
-  {
-    id: "suburbs",
-    name: "The Suburbs",
-    description: "Quiet streets, steady jobs, and a slower pace of life.",
-  },
-  {
-    id: "industrial",
-    name: "Industrial District",
-    description: "Factories, warehouses, and hard work define this area.",
-  },
-  {
-    id: "downtown",
-    name: "Downtown",
-    description: "The heart of commerce, law, and high-stakes business.",
-  },
-];
-
-// Cities
-export const CITIES = [
-  {
-    id: "los_angeles",
-    name: "Los Angeles",
-    country: "USA",
-    description: "The City of Angels, where dreams are made and broken.",
-  },
-  {
-    id: "chicago",
-    name: "Chicago",
-    country: "USA",
-    description: "The Windy City, a hub of industry and opportunity.",
-  },
-  {
-    id: "new_york",
-    name: "New York",
-    country: "USA",
-    description: "The Big Apple, where ambition meets opportunity.",
-  },
-  {
-    id: "london",
-    name: "London",
-    country: "UK",
-    description: "The capital of the United Kingdom, rich in history and opportunity.",
-  },
-  {
-    id: "moscow",
-    name: "Moscow",
-    country: "Russia",
-    description: "The capital of Russia, where power and opportunity converge.",
-  },
-  {
-    id: "beijing",
-    name: "Beijing",
-    country: "China",
-    description: "The capital of China, a city of ancient tradition and modern ambition.",
-  },
-];
-
-// Starting locations are now cities
-export const STARTING_LOCATIONS = CITIES.map((city) => ({
-  id: city.id,
-  name: `${city.name}, ${city.country}`,
-  description: city.description,
-}));
-
-export const CHARACTER_BACKGROUNDS = [
-  {
-    id: "street_rat",
-    name: "Street Rat",
-    description: "You grew up on the streets, learning to survive by any means necessary.",
-    skillBoosts: {
-      [SKILL_IDS.STREET_SMARTS]: 3,
-      [SKILL_IDS.CHARISMA]: 1,
-    },
-  },
-  {
-    id: "college_grad",
-    name: "College Graduate",
-    description: "You have a degree and the knowledge to back it up.",
-    skillBoosts: {
-      [SKILL_IDS.INTELLIGENCE]: 3,
-      [SKILL_IDS.LAW]: 1,
-    },
-  },
-  {
-    id: "business_heir",
-    name: "Business Heir",
-    description: "Born into wealth, you understand money and influence.",
-    skillBoosts: {
-      [SKILL_IDS.BUSINESS]: 3,
-      [SKILL_IDS.CHARISMA]: 1,
-    },
-  },
-  {
-    id: "athlete",
-    name: "Former Athlete",
-    description: "Your physical prowess and discipline set you apart.",
-    skillBoosts: {
-      [SKILL_IDS.STRENGTH]: 3,
-      [SKILL_IDS.CHARISMA]: 1,
-    },
-  },
-  {
-    id: "military",
-    name: "Military Veteran",
-    description: "Discipline, strength, and a no-nonsense approach to life.",
-    skillBoosts: {
-      [SKILL_IDS.STRENGTH]: 2,
-      [SKILL_IDS.INTELLIGENCE]: 1,
-      [SKILL_IDS.STREET_SMARTS]: 1,
-    },
-  },
-  {
-    id: "blank_slate",
-    name: "Blank Slate",
-    description: "A fresh start with no advantages or disadvantages.",
-    skillBoosts: {},
-  },
-];
-
-export const SAVE_KEY_PREFIX = "conquer_life_save_slot_";
-export const SAVE_KEY = "conquer_life_save_v1"; // Legacy key for backward compatibility
-export const SETTINGS_KEY = "conquer_life_settings_v1";
-export const MAX_SAVE_SLOTS = 5;
-
-// Time system: time is stored in minutes since midnight
-// 9:00 AM = 540 minutes
-const START_TIME_MINUTES = 540; // 9:00 AM
+function rollShiftQuality() {
+  const roll = Math.random() * 100;
+  let acc = 0;
+  for (const [quality, weight] of Object.entries(SHIFT_QUALITY_RARITIES)) {
+    acc += weight;
+    if (roll < acc) return quality;
+  }
+  return SHIFT_QUALITIES.NORMAL;
+}
 
 export function formatTime(minutes) {
   const hours = Math.floor(minutes / 60);
@@ -663,10 +362,6 @@ export function clamp(num, min, max) {
 }
 
 // EXP system constants
-export const MAX_SKILL_LEVEL = 100;
-const BASE_EXP = 100; // Base EXP for level 1->2
-const EXP_MULTIPLIER = 1.1; // Exponential growth multiplier
-
 // Calculate total EXP needed to reach a specific level
 export function getExpForLevel(level) {
   if (level <= 1) return 0;
@@ -714,6 +409,13 @@ export function getSkillLevel(state, skillId) {
 // Get current skill EXP
 export function getSkillExp(state, skillId) {
   return state.skills[skillId] ?? 0;
+}
+
+// Apply a delta to skill EXP (positive or negative). Clamps to [0, getExpForLevel(MAX_SKILL_LEVEL)].
+export function addSkillExp(state, skillId, delta) {
+  const current = getSkillExp(state, skillId);
+  const maxExp = getExpForLevel(MAX_SKILL_LEVEL);
+  state.skills[skillId] = clamp(Math.floor(current + delta), 0, maxExp);
 }
 
 // Get EXP needed for next level
@@ -869,12 +571,49 @@ export function pushLog(state, text) {
   });
 }
 
+// Build effects list for shift result UI (rewards and penalties).
+function buildShiftEffects(income, moneyMod, skillExpMod, notorietyMod, job) {
+  const effects = [];
+  const totalMoney = income + (moneyMod || 0);
+  effects.push({
+    type: "money",
+    value: totalMoney,
+    isBonus: (moneyMod || 0) > 0,
+    isPenalty: (moneyMod || 0) < 0,
+  });
+  if (skillExpMod && typeof skillExpMod === "object") {
+    for (const [skillId, expDelta] of Object.entries(skillExpMod)) {
+      if (expDelta === 0) continue;
+      const skillName = BASE_SKILLS.find((s) => s.id === skillId)?.name ?? skillId;
+      effects.push({
+        type: "skill",
+        skillId,
+        skillName,
+        value: expDelta,
+        isBonus: expDelta > 0,
+        isPenalty: expDelta < 0,
+      });
+    }
+  }
+  if (notorietyMod !== undefined && notorietyMod !== 0) {
+    effects.push({
+      type: "notoriety",
+      value: notorietyMod,
+      isBonus: notorietyMod < 0,
+      isPenalty: notorietyMod > 0,
+    });
+  }
+  return effects;
+}
+
 export function workShift(state, jobId) {
-  const job = BASE_JOBS.find((j) => j.id === jobId);
+  const job = SHIFTS.find((j) => j.id === jobId);
   if (!job) return state;
 
-  // Check if player is in the correct location for this job
-  if (state.location?.areaId !== job.areaId) {
+  // Check if player is in the correct location for this shift (area + city if shift is city-specific)
+  const wrongArea = state.location?.areaId !== job.areaId;
+  const wrongCity = job.cityId != null && state.location?.cityId !== job.cityId;
+  if (wrongArea || wrongCity) {
     const area = getAreaById(job.areaId);
     pushLog(
       state,
@@ -911,83 +650,122 @@ export function workShift(state, jobId) {
     return state;
   }
 
-  const income = job.incomePerShift;
+  const baseIncome = job.incomePerShift;
   const energyCost = 20;
-  state.player.money += income;
+
   // Only decrease energy if unlimited energy cheat is not enabled
   if (!state.cheats?.unlimitedEnergy) {
     state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
   } else {
-    state.player.energy = 100; // Keep at max if unlimited energy is enabled
+    state.player.energy = 100;
   }
-  
-  // Advance time based on energy cost
   advanceTime(state, energyCost);
 
-  if (job.category === JOB_CATEGORIES.ILLEGAL) {
-    const notorietyGain = Math.round(job.risk / 8);
-    state.player.notoriety = clamp(
-      state.player.notoriety + notorietyGain,
-      0,
-      100
-    );
+  const quality = rollShiftQuality();
+  const jobEvents = SHIFT_EVENTS[job.id];
+  let description;
+  let moneyMod = 0;
+  let skillExpMod = {};
+  let notorietyMod = 0;
 
-    const bustedChance = job.risk / 100;
-    if (Math.random() < bustedChance) {
-      const fine = Math.min(state.player.money, income * 2);
-      state.player.money -= fine;
+  if (quality === SHIFT_QUALITIES.NORMAL || !jobEvents || !jobEvents[quality]) {
+    // Normal shift: base pay only, and for illegal jobs possible bust
+    description = `You work a regular shift as ${job.name} and earn your usual pay.`;
+    if (job.category === SHIFT_CATEGORIES.ILLEGAL) {
+      const notorietyGain = Math.round(job.risk / 8);
       state.player.notoriety = clamp(
-        state.player.notoriety + 10,
+        state.player.notoriety + notorietyGain,
         0,
         100
       );
-      pushLog(
-        state,
-        `You get busted running ${job.name}. You pay a fine of $${fine}.`
-      );
+      const bustedChance = job.risk / 100;
+      if (Math.random() < bustedChance) {
+        const fine = Math.min(state.player.money, baseIncome * 2);
+        state.player.money -= fine;
+        state.player.notoriety = clamp(
+          state.player.notoriety + 10,
+          0,
+          100
+        );
+        description = `You get busted running ${job.name}. You pay a fine and your take is reduced.`;
+        state.player.money += baseIncome; // we hadn't added yet; net is baseIncome - fine
+        pushLog(state, description);
+        state.lastShiftResult = {
+          jobId: job.id,
+          jobName: job.name,
+          quality,
+          description,
+          effects: buildShiftEffects(baseIncome, -fine, {}, 10, job),
+        };
+        state.requestOpenShiftMenu = true;
+        return state;
+      }
+      state.player.money += baseIncome;
+      pushLog(state, `You run a risky ${job.name} shift and make $${baseIncome} without getting caught.`);
     } else {
-      pushLog(
-        state,
-        `You run a risky ${job.name} shift and make $${income} without getting caught.`
-      );
+      state.player.money += baseIncome;
+      pushLog(state, `You work a shift as ${job.name} and earn $${baseIncome}.`);
     }
-  } else {
-    pushLog(
-      state,
-      `You work a shift as ${job.name} and earn $${income}.`
+    // Base skill gain for normal shift
+    const skillToRaise = Object.keys(job.requiredSkills)[0] || SKILL_IDS.CHARISMA;
+    const currentLevel = getSkillLevel(state, skillToRaise);
+    if (currentLevel < MAX_SKILL_LEVEL) {
+      const expForNextLevel = getExpForLevel(currentLevel + 1);
+      const expForCurrentLevel = getExpForLevel(currentLevel);
+      const expToAdd = expForNextLevel - expForCurrentLevel;
+      addSkillExp(state, skillToRaise, expToAdd);
+      skillExpMod = { [skillToRaise]: expToAdd };
+    }
+    state.lastShiftResult = {
+      jobId: job.id,
+      jobName: job.name,
+      quality,
+      description,
+      effects: buildShiftEffects(baseIncome, 0, skillExpMod, job.category === SHIFT_CATEGORIES.ILLEGAL ? Math.round(job.risk / 8) : 0, job),
+    };
+    state.requestOpenShiftMenu = true;
+    return state;
+  }
+
+  // Non-normal: pick random event for this job and quality
+  const events = jobEvents[quality];
+  const event = events[Math.floor(Math.random() * events.length)];
+  description = event.description;
+  moneyMod = event.moneyMod ?? 0;
+  skillExpMod = event.skillExpMod ? { ...event.skillExpMod } : {};
+  notorietyMod = event.notorietyMod ?? 0;
+
+  const totalMoney = baseIncome + moneyMod;
+  state.player.money += totalMoney;
+
+  if (job.category === SHIFT_CATEGORIES.ILLEGAL) {
+    const baseNotoriety = Math.round(job.risk / 8);
+    state.player.notoriety = clamp(
+      state.player.notoriety + baseNotoriety + notorietyMod,
+      0,
+      100
     );
   }
 
-  const skillToRaise = Object.keys(job.requiredSkills)[0];
-  if (skillToRaise) {
-    // Add EXP for skill gain from work (equivalent to gaining enough EXP for 1 level)
-    const currentExp = getSkillExp(state, skillToRaise);
-    const currentLevel = getSkillLevel(state, skillToRaise);
-    if (currentLevel < MAX_SKILL_LEVEL) {
-      const expForCurrentLevel = getExpForLevel(currentLevel);
-      const expForNextLevel = getExpForLevel(currentLevel + 1);
-      const expNeededForNextLevel = expForNextLevel - expForCurrentLevel;
-      // Give enough EXP to level up once
-      state.skills[skillToRaise] = Math.min(
-        expForNextLevel,
-        getExpForLevel(MAX_SKILL_LEVEL)
-      );
-    }
-  } else {
-    // Add EXP for charisma gain from work
-    const currentExp = getSkillExp(state, SKILL_IDS.CHARISMA);
-    const currentLevel = getSkillLevel(state, SKILL_IDS.CHARISMA);
-    if (currentLevel < MAX_SKILL_LEVEL) {
-      const expForCurrentLevel = getExpForLevel(currentLevel);
-      const expForNextLevel = getExpForLevel(currentLevel + 1);
-      // Give enough EXP to level up once
-      state.skills[SKILL_IDS.CHARISMA] = Math.min(
-        expForNextLevel,
-        getExpForLevel(MAX_SKILL_LEVEL)
-      );
-    }
+  for (const [skillId, expDelta] of Object.entries(skillExpMod)) {
+    addSkillExp(state, skillId, expDelta);
   }
 
+  pushLog(state, description);
+  state.lastShiftResult = {
+    jobId: job.id,
+    jobName: job.name,
+    quality,
+    description,
+    effects: buildShiftEffects(
+      baseIncome,
+      moneyMod,
+      skillExpMod,
+      job.category === SHIFT_CATEGORIES.ILLEGAL ? Math.round(job.risk / 8) + notorietyMod : notorietyMod,
+      job
+    ),
+  };
+  state.requestOpenShiftMenu = true;
   return state;
 }
 
@@ -1270,9 +1048,13 @@ export function formatMoney(amount) {
   return `${sign}$${value}`;
 }
 
-// Location helper functions
-export function getJobsForLocation(cityId, areaId) {
-  return BASE_JOBS.filter((job) => job.areaId === areaId);
+// Location helper functions: shifts available in a (city, area). Omit cityId on shift = available in all cities.
+export function getShiftsForLocation(cityId, areaId) {
+  return SHIFTS.filter(
+    (shift) =>
+      shift.areaId === areaId &&
+      (shift.cityId == null || shift.cityId === cityId)
+  );
 }
 
 export function getBusinessesForLocation(cityId, areaId) {
@@ -1374,618 +1156,33 @@ export function getStartingSkills(backgroundId) {
   return skills;
 }
 
-// Check if player can do any jobs in an area with given background
-export function canDoAnyJobInArea(areaId, backgroundId) {
+// Check if player can do any shifts in a (city, area) with given background
+export function canDoAnyJobInArea(cityId, areaId, backgroundId) {
   const startingSkills = getStartingSkills(backgroundId);
-  const areaJobs = BASE_JOBS.filter((job) => job.areaId === areaId);
-  
-  if (areaJobs.length === 0) return false;
-  
-  // Check if at least one job has no requirements or player meets requirements
-  return areaJobs.some((job) => {
-    if (Object.keys(job.requiredSkills).length === 0) return true;
-    
-    for (const [skillId, requiredLevel] of Object.entries(job.requiredSkills)) {
+  const areaShifts = getShiftsForLocation(cityId, areaId);
+
+  if (areaShifts.length === 0) return false;
+
+  return areaShifts.some((shift) => {
+    if (Object.keys(shift.requiredSkills).length === 0) return true;
+    for (const [skillId, requiredLevel] of Object.entries(shift.requiredSkills)) {
       const currentLevel = startingSkills[skillId] || 1;
-      if (currentLevel < requiredLevel) {
-        return false;
-      }
+      if (currentLevel < requiredLevel) return false;
     }
     return true;
   });
 }
 
-// Get job and business counts for an area
-export function getAreaOpportunities(areaId) {
-  const jobs = BASE_JOBS.filter((job) => job.areaId === areaId);
+// Get shift and business counts for a (city, area)
+export function getAreaOpportunities(cityId, areaId) {
+  const shifts = getShiftsForLocation(cityId, areaId);
   const businesses = BASE_BUSINESSES.filter((business) => business.areaId === areaId);
-  
+
   return {
-    jobCount: jobs.length,
+    jobCount: shifts.length,
     businessCount: businesses.length,
   };
 }
-
-// Item and Equipment System
-export const EQUIPMENT_SLOTS = {
-  HEAD: "head",
-  CHEST: "chest",
-  LEGS: "legs",
-  HANDS: "hands",
-  EYE: "eye",
-  FACE: "face",
-  BAG: "bag",
-  RING: "ring",
-  NECKLACE: "necklace",
-  MELEE: "melee",
-  GUN: "gun",
-};
-
-// Item categories for shop filters. Clothing = head, chest, legs, hands, eye, face. Accessories = bag, ring, necklace. Weapons = melee, gun.
-export const ITEM_CATEGORIES = {
-  CLOTHING: "clothing",
-  ACCESSORIES: "accessories",
-  WEAPONS: "weapons",
-  FOOD: "food",
-  CONSUMABLES: "consumables",
-};
-
-export const EQUIPMENT_SLOT_CATEGORY = {
-  [EQUIPMENT_SLOTS.HEAD]: ITEM_CATEGORIES.CLOTHING,
-  [EQUIPMENT_SLOTS.CHEST]: ITEM_CATEGORIES.CLOTHING,
-  [EQUIPMENT_SLOTS.LEGS]: ITEM_CATEGORIES.CLOTHING,
-  [EQUIPMENT_SLOTS.HANDS]: ITEM_CATEGORIES.CLOTHING,
-  [EQUIPMENT_SLOTS.EYE]: ITEM_CATEGORIES.CLOTHING,
-  [EQUIPMENT_SLOTS.FACE]: ITEM_CATEGORIES.CLOTHING,
-  [EQUIPMENT_SLOTS.BAG]: ITEM_CATEGORIES.ACCESSORIES,
-  [EQUIPMENT_SLOTS.RING]: ITEM_CATEGORIES.ACCESSORIES,
-  [EQUIPMENT_SLOTS.NECKLACE]: ITEM_CATEGORIES.ACCESSORIES,
-  [EQUIPMENT_SLOTS.MELEE]: ITEM_CATEGORIES.WEAPONS,
-  [EQUIPMENT_SLOTS.GUN]: ITEM_CATEGORIES.WEAPONS,
-};
-
-export const BASE_ITEMS = [
-  // ---- SUBURBS ----
-  {
-    id: "small_bag",
-    name: "Small Bag",
-    description: "A small bag that increases inventory capacity from 5 to 6 slots.",
-    type: "bag",
-    slot: EQUIPMENT_SLOTS.BAG,
-    inventoryBonus: 1,
-    price: 50,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "small_backpack",
-    name: "Small Backpack",
-    description: "A small backpack that increases inventory capacity from 5 to 8 slots.",
-    type: "bag",
-    slot: EQUIPMENT_SLOTS.BAG,
-    inventoryBonus: 3,
-    price: 150,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "hoodie_suburbs",
-    name: "Casual Hoodie",
-    description: "Comfortable hoodie for the suburbs.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.CHEST,
-    price: 35,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "baseball_cap",
-    name: "Baseball Cap",
-    description: "A simple baseball cap.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.HEAD,
-    price: 20,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "sneakers",
-    name: "Sneakers",
-    description: "Everyday sneakers.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.LEGS,
-    price: 45,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "work_gloves_suburbs",
-    name: "Garden Gloves",
-    description: "Light gloves for yard work.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.HANDS,
-    price: 12,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "reading_glasses",
-    name: "Reading Glasses",
-    description: "Simple reading glasses.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.EYE,
-    price: 25,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "bandana_suburbs",
-    name: "Bandana",
-    description: "A casual bandana.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.FACE,
-    price: 8,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "rope_bracelet",
-    name: "Rope Bracelet",
-    description: "A simple rope bracelet.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.RING,
-    price: 5,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "dog_tag_chain",
-    name: "Dog Tag Chain",
-    description: "A basic chain for a dog tag.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.NECKLACE,
-    price: 15,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "pocket_knife",
-    name: "Pocket Knife",
-    description: "A small folding pocket knife.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.MELEE,
-    price: 30,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.WEAPONS,
-  },
-  {
-    id: "sandwich",
-    name: "Deli Sandwich",
-    description: "A hearty deli sandwich. Restores some health and energy.",
-    type: "consumable",
-    price: 8,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  {
-    id: "apple_pie",
-    name: "Apple Pie Slice",
-    description: "A slice of homemade apple pie.",
-    type: "consumable",
-    price: 6,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  {
-    id: "lemonade",
-    name: "Lemonade",
-    description: "Fresh lemonade. Refreshing.",
-    type: "consumable",
-    price: 4,
-    areaId: "suburbs",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  // ---- METROPOLIS ----
-  {
-    id: "designer_cap",
-    name: "Designer Cap",
-    description: "A high-end designer cap.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.HEAD,
-    price: 120,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "blazer",
-    name: "Designer Blazer",
-    description: "A sharp designer blazer.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.CHEST,
-    price: 280,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "designer_pants",
-    name: "Designer Trousers",
-    description: "Tailored designer trousers.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.LEGS,
-    price: 180,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "leather_driving_gloves",
-    name: "Leather Driving Gloves",
-    description: "Elegant leather driving gloves.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.HANDS,
-    price: 95,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "aviators",
-    name: "Aviator Sunglasses",
-    description: "Classic aviator sunglasses.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.EYE,
-    price: 150,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "silk_scarf",
-    name: "Silk Scarf",
-    description: "A luxurious silk scarf.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.FACE,
-    price: 75,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "designer_messenger",
-    name: "Designer Messenger Bag",
-    description: "Increases inventory capacity from 5 to 10 slots. Luxury brand.",
-    type: "bag",
-    slot: EQUIPMENT_SLOTS.BAG,
-    inventoryBonus: 5,
-    price: 450,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "signet_ring",
-    name: "Signet Ring",
-    description: "An understated signet ring.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.RING,
-    price: 200,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "gold_chain",
-    name: "Gold Chain",
-    description: "A fine gold chain.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.NECKLACE,
-    price: 320,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "titanium_briefcase",
-    name: "Titanium Briefcase",
-    description: "A reinforced briefcase that doubles as a melee weapon.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.MELEE,
-    price: 380,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.WEAPONS,
-  },
-  {
-    id: "sushi_platter",
-    name: "Sushi Platter",
-    description: "Fresh sushi. Restores health and energy.",
-    type: "consumable",
-    price: 35,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  {
-    id: "espresso_martini",
-    name: "Espresso Martini",
-    description: "A premium espresso martini.",
-    type: "consumable",
-    price: 22,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  {
-    id: "caviar_toast",
-    name: "Caviar Toast",
-    description: "Luxury caviar on toast.",
-    type: "consumable",
-    price: 55,
-    areaId: "metropolis",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  // ---- INDUSTRIAL ----
-  {
-    id: "hard_hat",
-    name: "Hard Hat",
-    description: "Safety hard hat for industrial work.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.HEAD,
-    price: 28,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "work_jacket",
-    name: "Work Jacket",
-    description: "Durable heavy-duty work jacket.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.CHEST,
-    price: 65,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "steel_toe_boots",
-    name: "Steel-Toe Boots",
-    description: "Industrial steel-toe boots.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.LEGS,
-    price: 85,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "work_gloves_industrial",
-    name: "Heavy Work Gloves",
-    description: "Thick gloves for machinery and welding.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.HANDS,
-    price: 22,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "safety_goggles",
-    name: "Safety Goggles",
-    description: "Industrial safety goggles.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.EYE,
-    price: 18,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "dust_mask",
-    name: "Dust Mask",
-    description: "Respirator-style dust mask.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.FACE,
-    price: 14,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "tool_bag",
-    name: "Tool Bag",
-    description: "Increases inventory from 5 to 9 slots. Built for tools.",
-    type: "bag",
-    slot: EQUIPMENT_SLOTS.BAG,
-    inventoryBonus: 4,
-    price: 95,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "welders_ring",
-    name: "Welder's Ring",
-    description: "A simple metal ring; no risk of spark.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.RING,
-    price: 12,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "id_lanyard",
-    name: "ID Lanyard",
-    description: "Company ID on a lanyard.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.NECKLACE,
-    price: 6,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "wrench_melee",
-    name: "Wrench",
-    description: "Heavy wrench. Effective in a pinch.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.MELEE,
-    price: 42,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.WEAPONS,
-  },
-  {
-    id: "energy_drink",
-    name: "Energy Drink",
-    description: "High caffeine. Restores energy quickly.",
-    type: "consumable",
-    price: 5,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  {
-    id: "protein_bar",
-    name: "Protein Bar",
-    description: "High-protein bar for long shifts.",
-    type: "consumable",
-    price: 4,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  {
-    id: "thermos_soup",
-    name: "Thermos of Soup",
-    description: "Hot soup. Restores health and energy.",
-    type: "consumable",
-    price: 7,
-    areaId: "industrial",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  // ---- DOWNTOWN ----
-  {
-    id: "fedora",
-    name: "Fedora",
-    description: "A classic fedora for downtown style.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.HEAD,
-    price: 55,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "dress_shirt",
-    name: "Dress Shirt",
-    description: "Crisp white dress shirt.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.CHEST,
-    price: 72,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "dress_pants",
-    name: "Dress Pants",
-    description: "Professional dress pants.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.LEGS,
-    price: 68,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "dress_gloves",
-    name: "Dress Gloves",
-    description: "Formal leather gloves.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.HANDS,
-    price: 48,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "wire_frame_glasses",
-    name: "Wire-Frame Glasses",
-    description: "Professional wire-frame glasses.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.EYE,
-    price: 90,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "face_mask_black",
-    name: "Black Face Mask",
-    description: "Discreet black face mask.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.FACE,
-    price: 10,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.CLOTHING,
-  },
-  {
-    id: "briefcase_bag",
-    name: "Leather Briefcase",
-    description: "Increases inventory from 5 to 8 slots. Professional look.",
-    type: "bag",
-    slot: EQUIPMENT_SLOTS.BAG,
-    inventoryBonus: 3,
-    price: 165,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "class_ring",
-    name: "Class Ring",
-    description: "A classic class ring.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.RING,
-    price: 85,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "tie_clip",
-    name: "Tie Clip",
-    description: "A sleek tie clip worn as a necklace.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.NECKLACE,
-    price: 35,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.ACCESSORIES,
-  },
-  {
-    id: "taser",
-    name: "Taser",
-    description: "Compact taser for self-defense.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.GUN,
-    price: 120,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.WEAPONS,
-  },
-  {
-    id: "pepper_spray",
-    name: "Pepper Spray",
-    description: "Small canister of pepper spray.",
-    type: "equipment",
-    slot: EQUIPMENT_SLOTS.MELEE,
-    price: 18,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.WEAPONS,
-  },
-  {
-    id: "hamburger",
-    name: "Hamburger",
-    description: "A delicious hamburger. Restores some health and energy.",
-    type: "consumable",
-    price: 10,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  {
-    id: "coffee_to_go",
-    name: "Coffee To-Go",
-    description: "Hot coffee. Restores energy.",
-    type: "consumable",
-    price: 5,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.FOOD,
-  },
-  {
-    id: "weed",
-    name: "Weed",
-    description: "Some weed. Use at your own risk.",
-    type: "consumable",
-    price: 25,
-    areaId: "downtown",
-    category: ITEM_CATEGORIES.CONSUMABLES,
-  },
-];
-
-// Items available in shops (any area); for backward compatibility. Prefer getShopItemsForArea(areaId).
-export const SHOP_ITEMS = BASE_ITEMS.filter((item) => item.price !== undefined);
 
 /** Returns items sold in a given area (same item list for that area in every city). */
 export function getShopItemsForArea(areaId) {

@@ -2,13 +2,13 @@ import React from "react";
 import {
   CITIES,
   CITY_AREAS,
-  BASE_JOBS,
+  SHIFTS,
   BASE_BUSINESSES,
   getCityById,
   getAreaById,
   formatMoney,
   getAreaOpportunities,
-  getJobsForLocation,
+  getShiftsForLocation,
   getBusinessesForLocation,
   canSeeJobDetails,
   canSeeBusinessDetails,
@@ -32,8 +32,8 @@ export function TravelView({ state, onTravel, travelCooldown, canTravel }) {
     setExpandedCityId(expandedCityId === cityId ? null : cityId);
   };
 
-  const getJobsForArea = (cityId, areaId) => {
-    return getJobsForLocation(cityId, areaId);
+  const getShiftsForArea = (cityId, areaId) => {
+    return getShiftsForLocation(cityId, areaId);
   };
 
   const getBusinessesForArea = (cityId, areaId) => {
@@ -76,7 +76,7 @@ export function TravelView({ state, onTravel, travelCooldown, canTravel }) {
                     const isCurrentArea = currentArea?.id === area.id;
                     const travelCost = 50; // Intra-city travel
                     const energyCost = 10;
-                    const opportunities = getAreaOpportunities(area.id);
+                    const opportunities = getAreaOpportunities(currentCity.id, area.id);
 
                     return (
                       <div
@@ -110,7 +110,7 @@ export function TravelView({ state, onTravel, travelCooldown, canTravel }) {
                             visible={hoveredOpportunity === `current-${area.id}-jobs`}
                             content={
                               <>
-                                {getJobsForArea(currentCity.id, area.id).map((job) => {
+                                {getShiftsForArea(currentCity.id, area.id).map((job) => {
                                   const canSee = canSeeJobDetails(state, job);
                                   return (
                                     <div key={job.id} className="tooltip-item">
@@ -198,7 +198,7 @@ export function TravelView({ state, onTravel, travelCooldown, canTravel }) {
                       <div className="travel-city-box-areas">
                         {CITY_AREAS.map((area) => {
                           const travelCost = 200; // Inter-city travel
-                          const opportunities = getAreaOpportunities(area.id);
+                          const opportunities = getAreaOpportunities(city.id, area.id);
                           return (
                             <div
                               key={area.id}
@@ -226,7 +226,7 @@ export function TravelView({ state, onTravel, travelCooldown, canTravel }) {
                                   visible={hoveredOpportunity === `${city.id}-${area.id}-jobs`}
                                   content={
                                     <>
-                                      {getJobsForArea(city.id, area.id).map((job) => {
+                                      {getShiftsForArea(city.id, area.id).map((job) => {
                                         const canSee = canSeeJobDetails(state, job);
                                         return (
                                           <div key={job.id} className="tooltip-item">

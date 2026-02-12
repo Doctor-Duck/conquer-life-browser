@@ -1,14 +1,14 @@
 import React from "react";
 import {
-  BASE_JOBS,
+  SHIFTS,
   BASE_SKILLS,
   BASE_BUSINESSES,
-  JOB_CATEGORIES,
+  SHIFT_CATEGORIES,
   canTakeJob,
   canStartBusiness,
   formatMoney,
   getSkillLevel,
-  getJobsForLocation,
+  getShiftsForLocation,
   getBusinessesForLocation,
   getJobDisplayName,
   getJobDisplayPay,
@@ -21,25 +21,25 @@ export function JobsView({ state, onChangeFilter, onWorkShift, onStartBusiness }
   const filter = state.jobsFilter;
   const currentAreaId = state.location?.areaId || "metropolis";
   
-  // Get jobs available in current area
-  const areaJobs = getJobsForLocation(state.location?.cityId, currentAreaId);
+  // Get shifts available in current (city, area)
+  const areaJobs = getShiftsForLocation(state.location?.cityId, currentAreaId);
   
   // Get businesses available in current area
   const areaBusinesses = getBusinessesForLocation(state.location?.cityId, currentAreaId);
 
   const visibleJobs = areaJobs.filter((job) => {
     if (filter === "all") return true;
-    if (filter === "legal") return job.category === JOB_CATEGORIES.LEGAL;
-    if (filter === "illegal") return job.category === JOB_CATEGORIES.ILLEGAL;
+    if (filter === "legal") return job.category === SHIFT_CATEGORIES.LEGAL;
+    if (filter === "illegal") return job.category === SHIFT_CATEGORIES.ILLEGAL;
     if (filter === "government")
-      return job.category === JOB_CATEGORIES.GOVERNMENT;
+      return job.category === SHIFT_CATEGORIES.GOVERNMENT;
     return true;
   });
 
   const categoryLabel = (category) => {
-    if (category === JOB_CATEGORIES.LEGAL) return "Legal";
-    if (category === JOB_CATEGORIES.ILLEGAL) return "Illegal";
-    if (category === JOB_CATEGORIES.GOVERNMENT) return "Government";
+    if (category === SHIFT_CATEGORIES.LEGAL) return "Legal";
+    if (category === SHIFT_CATEGORIES.ILLEGAL) return "Illegal";
+    if (category === SHIFT_CATEGORIES.GOVERNMENT) return "Government";
     return category;
   };
 
@@ -138,20 +138,20 @@ export function JobsView({ state, onChangeFilter, onWorkShift, onStartBusiness }
                 const { ok } = canTakeJob(state, job);
                 const btnDisabled = !ok;
                 const riskLabel =
-                  job.category === JOB_CATEGORIES.ILLEGAL
+                  job.category === SHIFT_CATEGORIES.ILLEGAL
                     ? `${job.risk}% Risk`
                     : "Low Risk";
                 const riskClass =
-                  job.category === JOB_CATEGORIES.ILLEGAL
+                  job.category === SHIFT_CATEGORIES.ILLEGAL
                     ? job.risk >= 50
                       ? "negative"
                       : "neutral"
                     : "positive";
 
                 const categoryClass =
-                  job.category === JOB_CATEGORIES.ILLEGAL
+                  job.category === SHIFT_CATEGORIES.ILLEGAL
                     ? "job-category-illegal"
-                    : job.category === JOB_CATEGORIES.GOVERNMENT
+                    : job.category === SHIFT_CATEGORIES.GOVERNMENT
                     ? "job-category-government"
                     : "job-category-legal";
 

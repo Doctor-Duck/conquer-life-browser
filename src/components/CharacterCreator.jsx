@@ -7,7 +7,7 @@ import {
   SKILL_IDS,
   canDoAnyJobInArea,
   getAreaOpportunities,
-  getJobsForLocation,
+  getShiftsForLocation,
   getBusinessesForLocation,
   canBackgroundSeeJob,
   canBackgroundSeeBusiness,
@@ -28,9 +28,11 @@ export function CharacterCreator({ onComplete, onCancel }) {
     ? CHARACTER_BACKGROUNDS.find((bg) => bg.id === background)
     : null;
 
-  // Check if player can do jobs in selected area with selected background
+  // Check if player can do shifts in selected (city, area) with selected background
   const canDoJobs =
-    areaId && background ? canDoAnyJobInArea(areaId, background) : true;
+    cityId && areaId && background
+      ? canDoAnyJobInArea(cityId, areaId, background)
+      : true;
 
   const canComplete =
     firstName.trim().length > 0 && cityId && areaId && background;
@@ -209,11 +211,14 @@ export function CharacterCreator({ onComplete, onCancel }) {
               <label className="character-creator-label">Starting Area *</label>
               <div className="character-creator-options">
                 {CITY_AREAS.map((area) => {
-                  const opportunities = getAreaOpportunities(area.id);
+                  const opportunities = cityId
+                    ? getAreaOpportunities(cityId, area.id)
+                    : { jobCount: 0, businessCount: 0 };
                   const hasWarning =
                     areaId === area.id &&
+                    cityId &&
                     background &&
-                    !canDoAnyJobInArea(area.id, background);
+                    !canDoAnyJobInArea(cityId, area.id, background);
                   return (
                     <button
                       key={area.id}
@@ -233,8 +238,8 @@ export function CharacterCreator({ onComplete, onCancel }) {
                         <SmartTooltip
                           visible={hoveredOpportunity === `${area.id}-jobs` && !!cityId && !!background}
                           content={
-                            getJobsForLocation(cityId, area.id).length > 0 ? (
-                              getJobsForLocation(cityId, area.id).map((job) => {
+                            cityId && getShiftsForLocation(cityId, area.id).length > 0 ? (
+                              getShiftsForLocation(cityId, area.id).map((job) => {
                                 const canSee = canBackgroundSeeJob(job, background);
                                 return (
                                   <div key={job.id} className="tooltip-item">

@@ -1,11 +1,11 @@
 import React from "react";
-import { BASE_JOBS, formatMoney } from "../gameCore.js";
+import { SHIFTS, formatMoney } from "../gameCore.js";
 
 export function OverviewView({ state }) {
   const p = state.player;
   const currentJob =
     state.currentJobId &&
-    BASE_JOBS.find((j) => j.id === state.currentJobId);
+    SHIFTS.find((j) => j.id === state.currentJobId);
 
   return (
     <div className="content-layout">

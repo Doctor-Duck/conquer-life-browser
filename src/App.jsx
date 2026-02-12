@@ -14,6 +14,7 @@ import { AssetsView } from "./views/AssetsView.jsx";
 import { TravelView } from "./views/TravelView.jsx";
 import { HousingView } from "./views/HousingView.jsx";
 import { ShopView } from "./components/ShopView.jsx";
+import { ShiftMenu } from "./components/ShiftMenu.jsx";
 import {
   advanceDay,
   buyItem,
@@ -53,6 +54,7 @@ export function App() {
   const [travelCooldown, setTravelCooldown] = React.useState(0);
   const [showCheatMenu, setShowCheatMenu] = React.useState(false);
   const [showShop, setShowShop] = React.useState(false);
+  const [showShiftMenu, setShowShiftMenu] = React.useState(false);
   const autoSaveTimerRef = React.useRef(null);
   const travelCooldownTimerRef = React.useRef(null);
 
@@ -174,6 +176,21 @@ export function App() {
       s.currentJobId = jobId;
       return s;
     });
+  };
+
+  React.useEffect(() => {
+    if (state?.requestOpenShiftMenu) {
+      setState((prev) => (prev ? { ...prev, requestOpenShiftMenu: false } : prev));
+      setShowShiftMenu(true);
+    }
+  }, [state?.requestOpenShiftMenu]);
+
+  const handleWorkAnotherShift = (jobId) => {
+    updateState((s) => {
+      workShift(s, jobId);
+      return s;
+    });
+    setShowShiftMenu(true);
   };
 
   const handleTrainSkill = (skillId) => {
@@ -553,6 +570,13 @@ export function App() {
         isAutoSave={saveNotification.isAutoSave}
         onClose={() => setSaveNotification({ visible: false, isAutoSave: false })}
       />
+      {showShiftMenu && state?.lastShiftResult && (
+        <ShiftMenu
+          state={state}
+          onClose={() => setShowShiftMenu(false)}
+          onWorkAnotherShift={handleWorkAnotherShift}
+        />
+      )}
       {showCheatMenu && state && (
         <CheatMenu
           state={state}

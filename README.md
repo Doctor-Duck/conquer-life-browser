@@ -43,23 +43,31 @@ Train six core skills that unlock opportunities:
 - **Law**: Legal expertise for legitimate business and government work
 - **Business**: Commercial acumen for entrepreneurship
 
-#### Jobs
-Work jobs across different areas of each city:
+#### Shifts (Work)
+Work shifts across different areas of each city. Shifts are the main way to earn money and gain skills; a separate **Jobs** system (career paths) is planned for the future.
+
 - **Metropolis**: Fast food, street dealing, and urban opportunities
 - **Suburbs**: Farm work, retail, and quieter lifestyles
 - **Industrial District**: Factory work, warehouses, and manufacturing
-- **Downtown**: Corporate jobs, law firms, and high-stakes business
+- **Downtown**: Police, law, government, and high-stakes business
 
-Jobs are categorized as:
+Shifts are categorized as:
 - **Legal**: Safe but lower-paying opportunities
 - **Illegal**: High-risk, high-reward activities
 - **Government**: Stable careers with good benefits
 
-**Work Shift Button**: 
-- Accessible from the Player Sidebar Current Life section
-- Validates your location before allowing you to work
-- Disabled when you're in the wrong location or lack energy
-- Provides quick access to work your current job
+**Shift placement**: Each shift has an area (required) and an optional city. If no city is set, the shift is available in that area in all cities; if a city is set, the shift is unique to that city (enabling future city-specific opportunities).
+
+**Work Shift flow**:
+- Click **Work Shift** in the Jobs view (Shifts tab) or in the Player Sidebar. Your shift is resolved immediately and the **Shift menu** opens.
+- The Shift menu shows: job name, **shift quality** (Very Bad, Bad, Normal, Good, Very Good), what happened during the shift, and rewards/penalties (money, skill EXP, notoriety for illegal work).
+- **Shift quality** is random: 50% Normal, 25% Good, 15% Bad, 5% Very Good, 5% Very Bad. Each non-Normal quality has multiple random events per shift type (e.g. tips, accidents, bonuses).
+- Use **Work Another Shift** in the Shift menu to work again; the menu updates with the new result. Buttons are anchored at the bottom so the layout stays fixed.
+- **Close** dismisses the menu. Work Shift in the sidebar or Jobs view validates location (and city when the shift is city-specific) and energy before working.
+
+**Work Shift button (Player Sidebar)**:
+- Disabled when you're in the wrong area/city or have less than 15 energy
+- Provides quick access to work your current shift
 
 #### Businesses
 Start and manage businesses for passive income:
@@ -212,27 +220,38 @@ conquer-life-browser/
 │   │   ├── PlayerSidebar.jsx
 │   │   ├── SaveNotification.jsx
 │   │   ├── Settings.jsx
+│   │   ├── ShiftMenu.jsx   # Shift result modal (quality, events, rewards)
 │   │   ├── ShopView.jsx
 │   │   ├── Sidebar.jsx
 │   │   ├── SmartTooltip.jsx
 │   │   └── TopBar.jsx
-│   ├── views/           # Game view components
+│   ├── data/             # Game data (separate from logic for easier editing)
+│   │   ├── index.js      # Re-exports all data
+│   │   ├── skills.js     # Skill IDs and base skills
+│   │   ├── shifts.js     # Shift categories and shift list (area + optional city)
+│   │   ├── shiftEvents.js # Shift quality rarities and per-shift random events
+│   │   ├── businesses.js # Business definitions
+│   │   ├── locations.js  # City areas, cities, starting locations
+│   │   ├── character.js  # Character backgrounds
+│   │   ├── items.js      # Equipment slots, item categories, items, shop items
+│   │   └── constants.js # Save/settings keys, skill EXP constants
+│   ├── views/            # Game view components
 │   │   ├── AssetsView.jsx
 │   │   ├── BusinessesView.jsx
 │   │   ├── HousingView.jsx
 │   │   ├── InventoryView.jsx
-│   │   ├── JobsView.jsx
+│   │   ├── JobsView.jsx   # Shifts tab + Businesses tab (Jobs tab coming later)
 │   │   ├── OverviewView.jsx
 │   │   ├── SkillsView.jsx
 │   │   └── TravelView.jsx
-│   ├── App.jsx          # Main application component
-│   ├── gameCore.js      # Core game logic and state management
-│   ├── index.css        # Global styles
-│   └── main.jsx         # Application entry point
-├── index.html           # HTML template
-├── package.json         # Dependencies and scripts
-├── vite.config.mts     # Vite configuration
-└── styles.css          # Additional styles
+│   ├── App.jsx           # Main application component
+│   ├── gameCore.js       # Core game logic (imports data from src/data/)
+│   ├── index.css         # Global styles
+│   └── main.jsx          # Application entry point
+├── index.html            # HTML template
+├── package.json          # Dependencies and scripts
+├── vite.config.mts       # Vite configuration
+└── styles.css            # Additional styles
 ```
 
 ## 🎯 Gameplay Tips
@@ -251,8 +270,9 @@ conquer-life-browser/
 ## 🔮 Future Features
 
 Potential additions and improvements:
+- **Jobs system**: Long-term career paths (separate from one-off shifts)
+- City-unique shifts: Add shifts with `cityId` set for location-specific opportunities
 - More cities and locations
-- Additional job types and career paths
 - Housing system with property ownership
 - Relationships and NPCs
 - Random events and storylines

@@ -1,11 +1,11 @@
 import React from "react";
-import { BASE_JOBS, BASE_SKILLS, CHARACTER_BACKGROUNDS, STARTING_LOCATIONS, formatMoney, formatTime, getSkillLevel, getCityById, getAreaById } from "../gameCore.js";
+import { SHIFTS, BASE_SKILLS, CHARACTER_BACKGROUNDS, STARTING_LOCATIONS, formatMoney, formatTime, getSkillLevel, getCityById, getAreaById } from "../gameCore.js";
 import { SmartTooltip } from "./SmartTooltip.jsx";
 
 export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkShift }) {
   const p = state.player;
   const currentJob =
-    state.currentJobId && BASE_JOBS.find((j) => j.id === state.currentJobId);
+    state.currentJobId && SHIFTS.find((j) => j.id === state.currentJobId);
   const [journalView, setJournalView] = React.useState("events"); // "events", "missions", or "achievements"
   const [cheatEmojiHovered, setCheatEmojiHovered] = React.useState(false);
 
@@ -104,11 +104,16 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkS
               disabled={
                 !state.location ||
                 state.location.areaId !== currentJob.areaId ||
+                (currentJob.cityId != null &&
+                  state.location.cityId !== currentJob.cityId) ||
                 p.energy < 15
               }
               style={{ flexShrink: 0, padding: "6px 12px", fontSize: "0.875rem" }}
               title={
-                !state.location || state.location.areaId !== currentJob.areaId
+                !state.location ||
+                state.location.areaId !== currentJob.areaId ||
+                (currentJob.cityId != null &&
+                  state.location.cityId !== currentJob.cityId)
                   ? `You need to be in ${getAreaById(currentJob.areaId)?.name || "the correct location"} to work this shift.`
                   : p.energy < 15
                   ? "You need at least 15 energy to work a shift."
