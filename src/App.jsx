@@ -13,9 +13,13 @@ import { SkillsView } from "./views/SkillsView.jsx";
 import { AssetsView } from "./views/AssetsView.jsx";
 import { TravelView } from "./views/TravelView.jsx";
 import { HousingView } from "./views/HousingView.jsx";
+import { ShopView } from "./components/ShopView.jsx";
 import {
   advanceDay,
+  buyItem,
   createNewGameState,
+  deleteItem,
+  equipItem,
   loadGameState,
   loadSettings,
   saveGameState,
@@ -23,6 +27,7 @@ import {
   trainSkill,
   trainSkillToNextLevel,
   travelToLocation,
+  unequipItem,
   workShift,
 } from "./gameCore.js";
 
@@ -33,6 +38,8 @@ function cloneState(state) {
     skills: { ...state.skills },
     ownedBusinesses: state.ownedBusinesses.map((b) => ({ ...b })),
     log: [...state.log],
+    inventory: state.inventory ? [...state.inventory] : [],
+    equipment: state.equipment ? { ...state.equipment } : {},
   };
 }
 
@@ -45,6 +52,7 @@ export function App() {
   const [saveNotification, setSaveNotification] = React.useState({ visible: false, isAutoSave: false });
   const [travelCooldown, setTravelCooldown] = React.useState(0);
   const [showCheatMenu, setShowCheatMenu] = React.useState(false);
+  const [showShop, setShowShop] = React.useState(false);
   const autoSaveTimerRef = React.useRef(null);
   const travelCooldownTimerRef = React.useRef(null);
 
@@ -185,6 +193,34 @@ export function App() {
   const handleStartBusiness = (businessId) => {
     updateState((s) => {
       startBusiness(s, businessId);
+      return s;
+    });
+  };
+
+  const handleBuyItem = (itemId) => {
+    updateState((s) => {
+      buyItem(s, itemId);
+      return s;
+    });
+  };
+
+  const handleEquipItem = (itemId, slot) => {
+    updateState((s) => {
+      equipItem(s, itemId, slot);
+      return s;
+    });
+  };
+
+  const handleUnequipItem = (slot) => {
+    updateState((s) => {
+      unequipItem(s, slot);
+      return s;
+    });
+  };
+
+  const handleDeleteItem = (itemId) => {
+    updateState((s) => {
+      deleteItem(s, itemId);
       return s;
     });
   };
@@ -458,6 +494,7 @@ export function App() {
           onShowSettings={handleShowSettings}
           onShowCheatMenu={handleShowCheatMenu}
           showCheatMenu={state.cheats?.showCheatMenu || false}
+          onShowShop={() => setShowShop(true)}
         />
         {view === "jobs" && (
           <JobsView
@@ -475,7 +512,22 @@ export function App() {
           />
         )}
         {view === "assets" && (
-          <AssetsView state={state} />
+          <AssetsView
+            state={state}
+            onEquipItem={handleEquipItem}
+            onUnequipItem={handleUnequipItem}
+            onDeleteItem={handleDeleteItem}
+            onBuyItem={handleBuyItem}
+            showShop={showShop}
+            setShowShop={setShowShop}
+          />
+        )}
+        {showShop && (
+          <ShopView
+            state={state}
+            onBuyItem={handleBuyItem}
+            onClose={() => setShowShop(false)}
+          />
         )}
         {view === "travel" && (
           <TravelView

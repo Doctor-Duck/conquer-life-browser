@@ -1,6 +1,6 @@
 import React from "react";
 
-export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMainMenu, onShowSettings, onShowCheatMenu, showCheatMenu }) {
+export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMainMenu, onShowSettings, onShowCheatMenu, showCheatMenu, onShowShop }) {
   const tabs = [
     { id: "jobs", label: "Work" },
     { id: "skills", label: "Training" },
@@ -79,6 +79,16 @@ export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMai
             )}
           </button>
         ))}
+        <div className="top-bar-nav-spacer" />
+        {onShowShop && (
+          <button
+            className="top-bar-tab top-bar-shop-tab"
+            onClick={onShowShop}
+            title="Shop"
+          >
+            Shop
+          </button>
+        )}
       </div>
       <div className="top-bar">
         <div className="top-bar-left">

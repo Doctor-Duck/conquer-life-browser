@@ -71,6 +71,20 @@ Start and manage businesses for passive income:
 - Businesses are grouped by city in the Assets view with collapsible sections
 - View total upkeep and net profit per day for each city
 
+#### Shop System
+- **24 Area-Based Shops**: Each city has 4 areas (Metropolis, Suburbs, Industrial, Downtown); each area has its own shop with unique items (same area = same items in every city).
+- **Buy Only When Present**: You can only purchase items when you are in that area; otherwise the shop shows "Travel to [Area] to buy".
+- **Area Preview**: Switch between area tabs in the Shop window to preview what each area sells before traveling.
+- **Category Filters**: Filter items by **Clothing** (Head, Chest, Legs, Hands, Eye, Face), **Accessories** (Bag, Ring, Necklace), **Weapons** (Melee, Gun), **Food**, and **Consumables**.
+- **Item Variety**: Area-specific equipment (e.g. Designer Blazer in Metropolis, Hard Hat in Industrial), bags that increase inventory slots, food and consumables.
+- **Slot/Category Labels**: Each item shows its equipment slot or category (e.g. Chest, Bag, Food) in the shop and in your inventory (not when equipped).
+- **Shop Button**: Located on the far right of the top bar navigation for quick access.
+
+#### Inventory & Equipment
+- **Equipment Slots**: Head, Chest, Legs, Hands, Eye, Face, Bag, Ring, Necklace, Melee, Gun.
+- **Bags**: Equipping a bag increases inventory capacity; switching to a smaller bag may cause item loss (with confirmation).
+- **Slot Labels**: Items in your inventory display their slot or category; equipped items are shown in the Equipment panel by slot.
+
 #### Travel System
 - Travel between cities and areas within cities
 - Each travel action has a cooldown period
@@ -198,6 +212,7 @@ conquer-life-browser/
 │   │   ├── PlayerSidebar.jsx
 │   │   ├── SaveNotification.jsx
 │   │   ├── Settings.jsx
+│   │   ├── ShopView.jsx
 │   │   ├── Sidebar.jsx
 │   │   ├── SmartTooltip.jsx
 │   │   └── TopBar.jsx
@@ -239,7 +254,6 @@ Potential additions and improvements:
 - More cities and locations
 - Additional job types and career paths
 - Housing system with property ownership
-- Inventory and item management
 - Relationships and NPCs
 - Random events and storylines
 - More achievements and milestones

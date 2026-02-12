@@ -1406,3 +1406,833 @@ export function getAreaOpportunities(areaId) {
   };
 }
 
+// Item and Equipment System
+export const EQUIPMENT_SLOTS = {
+  HEAD: "head",
+  CHEST: "chest",
+  LEGS: "legs",
+  HANDS: "hands",
+  EYE: "eye",
+  FACE: "face",
+  BAG: "bag",
+  RING: "ring",
+  NECKLACE: "necklace",
+  MELEE: "melee",
+  GUN: "gun",
+};
+
+// Item categories for shop filters. Clothing = head, chest, legs, hands, eye, face. Accessories = bag, ring, necklace. Weapons = melee, gun.
+export const ITEM_CATEGORIES = {
+  CLOTHING: "clothing",
+  ACCESSORIES: "accessories",
+  WEAPONS: "weapons",
+  FOOD: "food",
+  CONSUMABLES: "consumables",
+};
+
+export const EQUIPMENT_SLOT_CATEGORY = {
+  [EQUIPMENT_SLOTS.HEAD]: ITEM_CATEGORIES.CLOTHING,
+  [EQUIPMENT_SLOTS.CHEST]: ITEM_CATEGORIES.CLOTHING,
+  [EQUIPMENT_SLOTS.LEGS]: ITEM_CATEGORIES.CLOTHING,
+  [EQUIPMENT_SLOTS.HANDS]: ITEM_CATEGORIES.CLOTHING,
+  [EQUIPMENT_SLOTS.EYE]: ITEM_CATEGORIES.CLOTHING,
+  [EQUIPMENT_SLOTS.FACE]: ITEM_CATEGORIES.CLOTHING,
+  [EQUIPMENT_SLOTS.BAG]: ITEM_CATEGORIES.ACCESSORIES,
+  [EQUIPMENT_SLOTS.RING]: ITEM_CATEGORIES.ACCESSORIES,
+  [EQUIPMENT_SLOTS.NECKLACE]: ITEM_CATEGORIES.ACCESSORIES,
+  [EQUIPMENT_SLOTS.MELEE]: ITEM_CATEGORIES.WEAPONS,
+  [EQUIPMENT_SLOTS.GUN]: ITEM_CATEGORIES.WEAPONS,
+};
+
+export const BASE_ITEMS = [
+  // ---- SUBURBS ----
+  {
+    id: "small_bag",
+    name: "Small Bag",
+    description: "A small bag that increases inventory capacity from 5 to 6 slots.",
+    type: "bag",
+    slot: EQUIPMENT_SLOTS.BAG,
+    inventoryBonus: 1,
+    price: 50,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "small_backpack",
+    name: "Small Backpack",
+    description: "A small backpack that increases inventory capacity from 5 to 8 slots.",
+    type: "bag",
+    slot: EQUIPMENT_SLOTS.BAG,
+    inventoryBonus: 3,
+    price: 150,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "hoodie_suburbs",
+    name: "Casual Hoodie",
+    description: "Comfortable hoodie for the suburbs.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.CHEST,
+    price: 35,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "baseball_cap",
+    name: "Baseball Cap",
+    description: "A simple baseball cap.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.HEAD,
+    price: 20,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "sneakers",
+    name: "Sneakers",
+    description: "Everyday sneakers.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.LEGS,
+    price: 45,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "work_gloves_suburbs",
+    name: "Garden Gloves",
+    description: "Light gloves for yard work.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.HANDS,
+    price: 12,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "reading_glasses",
+    name: "Reading Glasses",
+    description: "Simple reading glasses.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.EYE,
+    price: 25,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "bandana_suburbs",
+    name: "Bandana",
+    description: "A casual bandana.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.FACE,
+    price: 8,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "rope_bracelet",
+    name: "Rope Bracelet",
+    description: "A simple rope bracelet.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.RING,
+    price: 5,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "dog_tag_chain",
+    name: "Dog Tag Chain",
+    description: "A basic chain for a dog tag.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.NECKLACE,
+    price: 15,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "pocket_knife",
+    name: "Pocket Knife",
+    description: "A small folding pocket knife.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.MELEE,
+    price: 30,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.WEAPONS,
+  },
+  {
+    id: "sandwich",
+    name: "Deli Sandwich",
+    description: "A hearty deli sandwich. Restores some health and energy.",
+    type: "consumable",
+    price: 8,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  {
+    id: "apple_pie",
+    name: "Apple Pie Slice",
+    description: "A slice of homemade apple pie.",
+    type: "consumable",
+    price: 6,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  {
+    id: "lemonade",
+    name: "Lemonade",
+    description: "Fresh lemonade. Refreshing.",
+    type: "consumable",
+    price: 4,
+    areaId: "suburbs",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  // ---- METROPOLIS ----
+  {
+    id: "designer_cap",
+    name: "Designer Cap",
+    description: "A high-end designer cap.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.HEAD,
+    price: 120,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "blazer",
+    name: "Designer Blazer",
+    description: "A sharp designer blazer.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.CHEST,
+    price: 280,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "designer_pants",
+    name: "Designer Trousers",
+    description: "Tailored designer trousers.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.LEGS,
+    price: 180,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "leather_driving_gloves",
+    name: "Leather Driving Gloves",
+    description: "Elegant leather driving gloves.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.HANDS,
+    price: 95,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "aviators",
+    name: "Aviator Sunglasses",
+    description: "Classic aviator sunglasses.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.EYE,
+    price: 150,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "silk_scarf",
+    name: "Silk Scarf",
+    description: "A luxurious silk scarf.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.FACE,
+    price: 75,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "designer_messenger",
+    name: "Designer Messenger Bag",
+    description: "Increases inventory capacity from 5 to 10 slots. Luxury brand.",
+    type: "bag",
+    slot: EQUIPMENT_SLOTS.BAG,
+    inventoryBonus: 5,
+    price: 450,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "signet_ring",
+    name: "Signet Ring",
+    description: "An understated signet ring.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.RING,
+    price: 200,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "gold_chain",
+    name: "Gold Chain",
+    description: "A fine gold chain.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.NECKLACE,
+    price: 320,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "titanium_briefcase",
+    name: "Titanium Briefcase",
+    description: "A reinforced briefcase that doubles as a melee weapon.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.MELEE,
+    price: 380,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.WEAPONS,
+  },
+  {
+    id: "sushi_platter",
+    name: "Sushi Platter",
+    description: "Fresh sushi. Restores health and energy.",
+    type: "consumable",
+    price: 35,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  {
+    id: "espresso_martini",
+    name: "Espresso Martini",
+    description: "A premium espresso martini.",
+    type: "consumable",
+    price: 22,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  {
+    id: "caviar_toast",
+    name: "Caviar Toast",
+    description: "Luxury caviar on toast.",
+    type: "consumable",
+    price: 55,
+    areaId: "metropolis",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  // ---- INDUSTRIAL ----
+  {
+    id: "hard_hat",
+    name: "Hard Hat",
+    description: "Safety hard hat for industrial work.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.HEAD,
+    price: 28,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "work_jacket",
+    name: "Work Jacket",
+    description: "Durable heavy-duty work jacket.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.CHEST,
+    price: 65,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "steel_toe_boots",
+    name: "Steel-Toe Boots",
+    description: "Industrial steel-toe boots.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.LEGS,
+    price: 85,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "work_gloves_industrial",
+    name: "Heavy Work Gloves",
+    description: "Thick gloves for machinery and welding.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.HANDS,
+    price: 22,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "safety_goggles",
+    name: "Safety Goggles",
+    description: "Industrial safety goggles.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.EYE,
+    price: 18,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "dust_mask",
+    name: "Dust Mask",
+    description: "Respirator-style dust mask.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.FACE,
+    price: 14,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "tool_bag",
+    name: "Tool Bag",
+    description: "Increases inventory from 5 to 9 slots. Built for tools.",
+    type: "bag",
+    slot: EQUIPMENT_SLOTS.BAG,
+    inventoryBonus: 4,
+    price: 95,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "welders_ring",
+    name: "Welder's Ring",
+    description: "A simple metal ring; no risk of spark.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.RING,
+    price: 12,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "id_lanyard",
+    name: "ID Lanyard",
+    description: "Company ID on a lanyard.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.NECKLACE,
+    price: 6,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "wrench_melee",
+    name: "Wrench",
+    description: "Heavy wrench. Effective in a pinch.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.MELEE,
+    price: 42,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.WEAPONS,
+  },
+  {
+    id: "energy_drink",
+    name: "Energy Drink",
+    description: "High caffeine. Restores energy quickly.",
+    type: "consumable",
+    price: 5,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  {
+    id: "protein_bar",
+    name: "Protein Bar",
+    description: "High-protein bar for long shifts.",
+    type: "consumable",
+    price: 4,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  {
+    id: "thermos_soup",
+    name: "Thermos of Soup",
+    description: "Hot soup. Restores health and energy.",
+    type: "consumable",
+    price: 7,
+    areaId: "industrial",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  // ---- DOWNTOWN ----
+  {
+    id: "fedora",
+    name: "Fedora",
+    description: "A classic fedora for downtown style.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.HEAD,
+    price: 55,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "dress_shirt",
+    name: "Dress Shirt",
+    description: "Crisp white dress shirt.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.CHEST,
+    price: 72,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "dress_pants",
+    name: "Dress Pants",
+    description: "Professional dress pants.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.LEGS,
+    price: 68,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "dress_gloves",
+    name: "Dress Gloves",
+    description: "Formal leather gloves.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.HANDS,
+    price: 48,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "wire_frame_glasses",
+    name: "Wire-Frame Glasses",
+    description: "Professional wire-frame glasses.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.EYE,
+    price: 90,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "face_mask_black",
+    name: "Black Face Mask",
+    description: "Discreet black face mask.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.FACE,
+    price: 10,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.CLOTHING,
+  },
+  {
+    id: "briefcase_bag",
+    name: "Leather Briefcase",
+    description: "Increases inventory from 5 to 8 slots. Professional look.",
+    type: "bag",
+    slot: EQUIPMENT_SLOTS.BAG,
+    inventoryBonus: 3,
+    price: 165,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "class_ring",
+    name: "Class Ring",
+    description: "A classic class ring.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.RING,
+    price: 85,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "tie_clip",
+    name: "Tie Clip",
+    description: "A sleek tie clip worn as a necklace.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.NECKLACE,
+    price: 35,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.ACCESSORIES,
+  },
+  {
+    id: "taser",
+    name: "Taser",
+    description: "Compact taser for self-defense.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.GUN,
+    price: 120,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.WEAPONS,
+  },
+  {
+    id: "pepper_spray",
+    name: "Pepper Spray",
+    description: "Small canister of pepper spray.",
+    type: "equipment",
+    slot: EQUIPMENT_SLOTS.MELEE,
+    price: 18,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.WEAPONS,
+  },
+  {
+    id: "hamburger",
+    name: "Hamburger",
+    description: "A delicious hamburger. Restores some health and energy.",
+    type: "consumable",
+    price: 10,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  {
+    id: "coffee_to_go",
+    name: "Coffee To-Go",
+    description: "Hot coffee. Restores energy.",
+    type: "consumable",
+    price: 5,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.FOOD,
+  },
+  {
+    id: "weed",
+    name: "Weed",
+    description: "Some weed. Use at your own risk.",
+    type: "consumable",
+    price: 25,
+    areaId: "downtown",
+    category: ITEM_CATEGORIES.CONSUMABLES,
+  },
+];
+
+// Items available in shops (any area); for backward compatibility. Prefer getShopItemsForArea(areaId).
+export const SHOP_ITEMS = BASE_ITEMS.filter((item) => item.price !== undefined);
+
+/** Returns items sold in a given area (same item list for that area in every city). */
+export function getShopItemsForArea(areaId) {
+  if (!areaId) return [];
+  return BASE_ITEMS.filter((item) => item.areaId === areaId && item.price != null);
+}
+
+const SLOT_LABELS = {
+  [EQUIPMENT_SLOTS.HEAD]: "Head",
+  [EQUIPMENT_SLOTS.CHEST]: "Chest",
+  [EQUIPMENT_SLOTS.LEGS]: "Legs",
+  [EQUIPMENT_SLOTS.HANDS]: "Hands",
+  [EQUIPMENT_SLOTS.EYE]: "Eye",
+  [EQUIPMENT_SLOTS.FACE]: "Face",
+  [EQUIPMENT_SLOTS.BAG]: "Bag",
+  [EQUIPMENT_SLOTS.RING]: "Ring",
+  [EQUIPMENT_SLOTS.NECKLACE]: "Necklace",
+  [EQUIPMENT_SLOTS.MELEE]: "Melee",
+  [EQUIPMENT_SLOTS.GUN]: "Gun",
+};
+
+/** Returns a short label for item slot (equipment) or category (consumables), for display in shop and inventory. */
+export function getItemSlotOrCategoryLabel(item) {
+  if (!item) return null;
+  if (item.slot && SLOT_LABELS[item.slot]) return SLOT_LABELS[item.slot];
+  if (item.category === ITEM_CATEGORIES.FOOD) return "Food";
+  if (item.category === ITEM_CATEGORIES.CONSUMABLES) return "Consumable";
+  if (item.category) return item.category.charAt(0).toUpperCase() + item.category.slice(1);
+  return null;
+}
+
+// Base inventory size (pockets)
+export const BASE_INVENTORY_SIZE = 5;
+
+// Get maximum inventory size based on equipped bag
+export function getMaxInventorySize(state) {
+  const equippedBag = state.equipment?.[EQUIPMENT_SLOTS.BAG];
+  if (!equippedBag) {
+    return BASE_INVENTORY_SIZE;
+  }
+  const bagItem = BASE_ITEMS.find((item) => item.id === equippedBag);
+  if (!bagItem || !bagItem.inventoryBonus) {
+    return BASE_INVENTORY_SIZE;
+  }
+  return BASE_INVENTORY_SIZE + bagItem.inventoryBonus;
+}
+
+// Get current storage tier name
+export function getStorageTierName(state) {
+  const equippedBag = state.equipment?.[EQUIPMENT_SLOTS.BAG];
+  if (!equippedBag) {
+    return "Pockets";
+  }
+  const bagItem = BASE_ITEMS.find((item) => item.id === equippedBag);
+  return bagItem?.name || "Pockets";
+}
+
+// Buy item from shop (only when player is in the same area as the shop)
+export function buyItem(state, itemId) {
+  const item = BASE_ITEMS.find((i) => i.id === itemId);
+  if (!item || !item.price) {
+    pushLog(state, "Item not available for purchase.");
+    return state;
+  }
+
+  if (item.areaId && state.location?.areaId !== item.areaId) {
+    const area = CITY_AREAS.find((a) => a.id === item.areaId);
+    pushLog(state, `You must be in ${area?.name || item.areaId} to buy this item.`);
+    return state;
+  }
+
+  if (state.player.money < item.price) {
+    pushLog(state, `You don't have enough money. You need ${formatMoney(item.price)}.`);
+    return state;
+  }
+
+  // Check if inventory has space
+  const maxSize = getMaxInventorySize(state);
+  const currentItems = state.inventory?.length || 0;
+  if (currentItems >= maxSize) {
+    pushLog(state, `Your inventory is full. You have ${currentItems}/${maxSize} slots used.`);
+    return state;
+  }
+
+  state.player.money -= item.price;
+  if (!state.inventory) {
+    state.inventory = [];
+  }
+  state.inventory = [...state.inventory, itemId];
+  pushLog(state, `You bought ${item.name} for ${formatMoney(item.price)}.`);
+  return state;
+}
+
+// Equip item
+export function equipItem(state, itemId, slot) {
+  if (!state.inventory) {
+    state.inventory = [];
+  }
+
+  const itemIndex = state.inventory.indexOf(itemId);
+  if (itemIndex === -1) {
+    pushLog(state, "Item not found in inventory.");
+    return state;
+  }
+
+  const item = BASE_ITEMS.find((i) => i.id === itemId);
+  if (!item) {
+    pushLog(state, "Invalid item.");
+    return state;
+  }
+
+  // If equipping a bag, check if it would cause item loss
+  if (slot === EQUIPMENT_SLOTS.BAG && item.type === "bag") {
+    const currentMaxSize = getMaxInventorySize(state);
+    const newMaxSize = BASE_INVENTORY_SIZE + (item.inventoryBonus || 0);
+    const currentItems = state.inventory.length;
+
+    // If new bag is smaller and we have more items than it can hold
+    if (newMaxSize < currentMaxSize && currentItems > newMaxSize) {
+      // This will be handled by the UI with a warning dialog
+      // For now, just return without equipping
+      return state;
+    }
+  }
+
+  // If slot already has an item, unequip it first
+  if (!state.equipment) {
+    state.equipment = {};
+  }
+  const currentlyEquipped = state.equipment[slot];
+  if (currentlyEquipped) {
+    // Add currently equipped item back to inventory
+    state.inventory.push(currentlyEquipped);
+  }
+
+  // Equip the new item
+  state.equipment[slot] = itemId;
+  // Remove from inventory
+  state.inventory.splice(itemIndex, 1);
+
+  const itemName = item.name;
+  pushLog(state, `You equipped ${itemName}.`);
+
+  // If equipping a bag, update inventory size
+  if (slot === EQUIPMENT_SLOTS.BAG && item.type === "bag") {
+    const newMaxSize = getMaxInventorySize(state);
+    pushLog(state, `Your inventory capacity is now ${newMaxSize} slots.`);
+  }
+
+  return state;
+}
+
+// Unequip item
+export function unequipItem(state, slot) {
+  if (!state.equipment || !state.equipment[slot]) {
+    pushLog(state, "No item equipped in that slot.");
+    return state;
+  }
+
+  const itemId = state.equipment[slot];
+  const item = BASE_ITEMS.find((i) => i.id === itemId);
+  
+  // If unequipping a bag, check if it would cause item loss
+  if (slot === EQUIPMENT_SLOTS.BAG && item?.type === "bag") {
+    const currentMaxSize = getMaxInventorySize(state);
+    const newMaxSize = BASE_INVENTORY_SIZE; // Back to pockets
+    const currentItems = state.inventory?.length || 0;
+
+    // If we have more items than pockets can hold, warn the user
+    if (currentItems > newMaxSize) {
+      // This will be handled by the UI with a warning dialog
+      // For now, just return without unequipping
+      return state;
+    }
+  }
+
+  // Check if inventory has space
+  const maxSize = getMaxInventorySize(state);
+  const currentItems = state.inventory?.length || 0;
+  if (currentItems >= maxSize) {
+    pushLog(state, "Your inventory is full. Cannot unequip item.");
+    return state;
+  }
+
+  if (!state.inventory) {
+    state.inventory = [];
+  }
+  state.inventory.push(itemId);
+  delete state.equipment[slot];
+
+  const itemName = item?.name || "item";
+  pushLog(state, `You unequipped ${itemName}.`);
+
+  // If unequipping a bag, update inventory size
+  if (slot === EQUIPMENT_SLOTS.BAG && item?.type === "bag") {
+    pushLog(state, `Your inventory capacity is now ${BASE_INVENTORY_SIZE} slots (Pockets).`);
+  }
+
+  return state;
+}
+
+// Delete item from inventory
+export function deleteItem(state, itemId) {
+  if (!state.inventory) {
+    state.inventory = [];
+  }
+
+  const itemIndex = state.inventory.indexOf(itemId);
+  if (itemIndex === -1) {
+    pushLog(state, "Item not found in inventory.");
+    return state;
+  }
+
+  const item = BASE_ITEMS.find((i) => i.id === itemId);
+  const itemName = item?.name || "item";
+  
+  state.inventory = state.inventory.filter((_, i) => i !== itemIndex);
+  pushLog(state, `You deleted ${itemName} from your inventory.`);
+  return state;
+}
+
+// Check if unequipping bag would cause item loss
+export function wouldUnequipBagCauseItemLoss(state, slot) {
+  if (slot !== EQUIPMENT_SLOTS.BAG) return false;
+  
+  const itemId = state.equipment?.[slot];
+  if (!itemId) return false;
+  
+  const item = BASE_ITEMS.find((i) => i.id === itemId);
+  if (!item || item.type !== "bag") return false;
+
+  const currentMaxSize = getMaxInventorySize(state);
+  const newMaxSize = BASE_INVENTORY_SIZE;
+  const currentItems = state.inventory?.length || 0;
+
+  return currentItems > newMaxSize;
+}
+
+// Check if equipping bag would cause item loss (when switching from larger to smaller)
+export function wouldEquipBagCauseItemLoss(state, itemId) {
+  const item = BASE_ITEMS.find((i) => i.id === itemId);
+  if (!item || item.type !== "bag") return false;
+
+  const currentMaxSize = getMaxInventorySize(state);
+  const newMaxSize = BASE_INVENTORY_SIZE + (item.inventoryBonus || 0);
+  const currentItems = state.inventory?.length || 0;
+
+  // If new bag is smaller and we have more items than it can hold
+  return newMaxSize < currentMaxSize && currentItems > newMaxSize;
+}
