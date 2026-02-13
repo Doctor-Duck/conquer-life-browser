@@ -12,3 +12,4 @@ export const START_TIME_MINUTES = 540;
 export const MAX_SKILL_LEVEL = 100;
 export const BASE_EXP = 100;
 export const EXP_MULTIPLIER = 1.1;
+export const BASE_SHIFT_EXP = 10; // Base EXP gained from a normal shift

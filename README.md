@@ -61,7 +61,7 @@ Shifts are categorized as:
 **Work Shift flow**:
 - Click **Work Shift** in the Jobs view (Shifts tab) or in the Player Sidebar. Your shift is resolved immediately and the **Shift menu** opens.
 - The Shift menu shows: job name, **shift quality** (Very Bad, Bad, Normal, Good, Very Good), what happened during the shift, and rewards/penalties (money, skill EXP, notoriety for illegal work).
-- **Shift quality** is random: 50% Normal, 25% Good, 15% Bad, 5% Very Good, 5% Very Bad. Each non-Normal quality has multiple random events per shift type (e.g. tips, accidents, bonuses).
+- **Shift quality** is random: 60% Normal, 15% Good, 15% Bad, 5% Very Good, 5% Very Bad. Each non-Normal quality has multiple random events per shift type (e.g. tips, accidents, bonuses). Normal shifts give base EXP (no scaling), Good shifts give 2x base EXP, Very Good shifts give 3x base EXP, while Bad and Very Bad shifts reduce EXP.
 - Use **Work Another Shift** in the Shift menu to work again; the menu updates with the new result. Buttons are anchored at the bottom so the layout stays fixed.
 - **Close** dismisses the menu. Work Shift in the sidebar or Jobs view validates location (and city when the shift is city-specific) and energy before working.
 
@@ -90,8 +90,13 @@ Start and manage businesses for passive income:
 
 #### Inventory & Equipment
 - **Equipment Slots**: Head, Chest, Legs, Hands, Eye, Face, Bag, Ring, Necklace, Melee, Gun.
-- **Bags**: Equipping a bag increases inventory capacity; switching to a smaller bag may cause item loss (with confirmation).
+- **Inventory System**: 
+  - Base capacity: 5 pocket slots (always available)
+  - Bags add additional slots (don't replace pockets)
+  - Visual distinction: Pocket slots are blue, each bag type has its own color
+  - Switching to a smaller bag may cause item loss (with confirmation)
 - **Slot Labels**: Items in your inventory display their slot or category; equipped items are shown in the Equipment panel by slot.
+- **Training to Next Level**: Shows total energy needed, energy restored per day (100), and days required (or "< 1 day" if achievable with current energy).
 
 #### Travel System
 - Travel between cities and areas within cities
@@ -108,6 +113,7 @@ Start and manage businesses for passive income:
 
 ### Save System
 - **Multiple Save Slots**: Save up to 5 different game states
+- **Save Slot Display**: Current save slot shown in top bar header
 - **Auto-Save**: Configurable automatic saving at set intervals
 - **Manual Save**: Save your progress at any time
 - **Load Game**: Resume from any saved slot
@@ -140,6 +146,9 @@ A comprehensive cheat menu for testing and experimentation:
   - Unlock all businesses in a specific city
   - Unlock all businesses in all cities
 - **Skill Cheats**: Increase skill levels or max all skills instantly
+- **Item Spawning**: Spawn any item into inventory (only if you have available slots)
+  - Items grouped by category (Clothing, Accessories, Weapons, Food, Consumables)
+  - Dev Backpack available: Adds 100 additional inventory slots
 - **Cheat State**: 
   - Cheat usage is tracked per save file
   - Save files display cheat indicators

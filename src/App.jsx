@@ -512,6 +512,7 @@ export function App() {
           onShowCheatMenu={handleShowCheatMenu}
           showCheatMenu={state.cheats?.showCheatMenu || false}
           onShowShop={() => setShowShop(true)}
+          currentSaveSlot={state.currentSaveSlot}
         />
         {view === "jobs" && (
           <JobsView

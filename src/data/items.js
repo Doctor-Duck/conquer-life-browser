@@ -37,8 +37,8 @@ export const EQUIPMENT_SLOT_CATEGORY = {
 };
 
 export const BASE_ITEMS = [
-  { id: "small_bag", name: "Small Bag", description: "A small bag that increases inventory capacity from 5 to 6 slots.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 1, price: 50, areaId: "suburbs", category: ITEM_CATEGORIES.ACCESSORIES },
-  { id: "small_backpack", name: "Small Backpack", description: "A small backpack that increases inventory capacity from 5 to 8 slots.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 3, price: 150, areaId: "suburbs", category: ITEM_CATEGORIES.ACCESSORIES },
+  { id: "small_bag", name: "Small Bag", description: "A small bag that adds 5 additional inventory slots.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 5, price: 50, areaId: "suburbs", category: ITEM_CATEGORIES.ACCESSORIES },
+  { id: "small_backpack", name: "Small Backpack", description: "A small backpack that adds 8 additional inventory slots.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 8, price: 150, areaId: "suburbs", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "hoodie_suburbs", name: "Casual Hoodie", description: "Comfortable hoodie for the suburbs.", type: "equipment", slot: EQUIPMENT_SLOTS.CHEST, price: 35, areaId: "suburbs", category: ITEM_CATEGORIES.CLOTHING },
   { id: "baseball_cap", name: "Baseball Cap", description: "A simple baseball cap.", type: "equipment", slot: EQUIPMENT_SLOTS.HEAD, price: 20, areaId: "suburbs", category: ITEM_CATEGORIES.CLOTHING },
   { id: "sneakers", name: "Sneakers", description: "Everyday sneakers.", type: "equipment", slot: EQUIPMENT_SLOTS.LEGS, price: 45, areaId: "suburbs", category: ITEM_CATEGORIES.CLOTHING },
@@ -57,7 +57,7 @@ export const BASE_ITEMS = [
   { id: "leather_driving_gloves", name: "Leather Driving Gloves", description: "Elegant leather driving gloves.", type: "equipment", slot: EQUIPMENT_SLOTS.HANDS, price: 95, areaId: "metropolis", category: ITEM_CATEGORIES.CLOTHING },
   { id: "aviators", name: "Aviator Sunglasses", description: "Classic aviator sunglasses.", type: "equipment", slot: EQUIPMENT_SLOTS.EYE, price: 150, areaId: "metropolis", category: ITEM_CATEGORIES.CLOTHING },
   { id: "silk_scarf", name: "Silk Scarf", description: "A luxurious silk scarf.", type: "equipment", slot: EQUIPMENT_SLOTS.FACE, price: 75, areaId: "metropolis", category: ITEM_CATEGORIES.CLOTHING },
-  { id: "designer_messenger", name: "Designer Messenger Bag", description: "Increases inventory capacity from 5 to 10 slots. Luxury brand.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 5, price: 450, areaId: "metropolis", category: ITEM_CATEGORIES.ACCESSORIES },
+  { id: "designer_messenger", name: "Designer Messenger Bag", description: "Adds 10 additional inventory slots. Luxury brand.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 10, price: 450, areaId: "metropolis", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "signet_ring", name: "Signet Ring", description: "An understated signet ring.", type: "equipment", slot: EQUIPMENT_SLOTS.RING, price: 200, areaId: "metropolis", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "gold_chain", name: "Gold Chain", description: "A fine gold chain.", type: "equipment", slot: EQUIPMENT_SLOTS.NECKLACE, price: 320, areaId: "metropolis", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "titanium_briefcase", name: "Titanium Briefcase", description: "A reinforced briefcase that doubles as a melee weapon.", type: "equipment", slot: EQUIPMENT_SLOTS.MELEE, price: 380, areaId: "metropolis", category: ITEM_CATEGORIES.WEAPONS },
@@ -70,7 +70,7 @@ export const BASE_ITEMS = [
   { id: "work_gloves_industrial", name: "Heavy Work Gloves", description: "Thick gloves for machinery and welding.", type: "equipment", slot: EQUIPMENT_SLOTS.HANDS, price: 22, areaId: "industrial", category: ITEM_CATEGORIES.CLOTHING },
   { id: "safety_goggles", name: "Safety Goggles", description: "Industrial safety goggles.", type: "equipment", slot: EQUIPMENT_SLOTS.EYE, price: 18, areaId: "industrial", category: ITEM_CATEGORIES.CLOTHING },
   { id: "dust_mask", name: "Dust Mask", description: "Respirator-style dust mask.", type: "equipment", slot: EQUIPMENT_SLOTS.FACE, price: 14, areaId: "industrial", category: ITEM_CATEGORIES.CLOTHING },
-  { id: "tool_bag", name: "Tool Bag", description: "Increases inventory from 5 to 9 slots. Built for tools.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 4, price: 95, areaId: "industrial", category: ITEM_CATEGORIES.ACCESSORIES },
+  { id: "tool_bag", name: "Tool Bag", description: "Adds 9 additional inventory slots. Built for tools.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 9, price: 95, areaId: "industrial", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "welders_ring", name: "Welder's Ring", description: "A simple metal ring; no risk of spark.", type: "equipment", slot: EQUIPMENT_SLOTS.RING, price: 12, areaId: "industrial", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "id_lanyard", name: "ID Lanyard", description: "Company ID on a lanyard.", type: "equipment", slot: EQUIPMENT_SLOTS.NECKLACE, price: 6, areaId: "industrial", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "wrench_melee", name: "Wrench", description: "Heavy wrench. Effective in a pinch.", type: "equipment", slot: EQUIPMENT_SLOTS.MELEE, price: 42, areaId: "industrial", category: ITEM_CATEGORIES.WEAPONS },
@@ -83,7 +83,7 @@ export const BASE_ITEMS = [
   { id: "dress_gloves", name: "Dress Gloves", description: "Formal leather gloves.", type: "equipment", slot: EQUIPMENT_SLOTS.HANDS, price: 48, areaId: "downtown", category: ITEM_CATEGORIES.CLOTHING },
   { id: "wire_frame_glasses", name: "Wire-Frame Glasses", description: "Professional wire-frame glasses.", type: "equipment", slot: EQUIPMENT_SLOTS.EYE, price: 90, areaId: "downtown", category: ITEM_CATEGORIES.CLOTHING },
   { id: "face_mask_black", name: "Black Face Mask", description: "Discreet black face mask.", type: "equipment", slot: EQUIPMENT_SLOTS.FACE, price: 10, areaId: "downtown", category: ITEM_CATEGORIES.CLOTHING },
-  { id: "briefcase_bag", name: "Leather Briefcase", description: "Increases inventory from 5 to 8 slots. Professional look.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 3, price: 165, areaId: "downtown", category: ITEM_CATEGORIES.ACCESSORIES },
+  { id: "briefcase_bag", name: "Leather Briefcase", description: "Adds 8 additional inventory slots. Professional look.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 8, price: 165, areaId: "downtown", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "class_ring", name: "Class Ring", description: "A classic class ring.", type: "equipment", slot: EQUIPMENT_SLOTS.RING, price: 85, areaId: "downtown", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "tie_clip", name: "Tie Clip", description: "A sleek tie clip worn as a necklace.", type: "equipment", slot: EQUIPMENT_SLOTS.NECKLACE, price: 35, areaId: "downtown", category: ITEM_CATEGORIES.ACCESSORIES },
   { id: "taser", name: "Taser", description: "Compact taser for self-defense.", type: "equipment", slot: EQUIPMENT_SLOTS.GUN, price: 120, areaId: "downtown", category: ITEM_CATEGORIES.WEAPONS },
@@ -91,6 +91,7 @@ export const BASE_ITEMS = [
   { id: "hamburger", name: "Hamburger", description: "A delicious hamburger. Restores some health and energy.", type: "consumable", price: 10, areaId: "downtown", category: ITEM_CATEGORIES.FOOD },
   { id: "coffee_to_go", name: "Coffee To-Go", description: "Hot coffee. Restores energy.", type: "consumable", price: 5, areaId: "downtown", category: ITEM_CATEGORIES.FOOD },
   { id: "weed", name: "Weed", description: "Some weed. Use at your own risk.", type: "consumable", price: 25, areaId: "downtown", category: ITEM_CATEGORIES.CONSUMABLES },
+  { id: "dev_backpack", name: "Dev Backpack", description: "A developer's backpack with massive storage. Adds 100 additional inventory slots. Cheat item.", type: "bag", slot: EQUIPMENT_SLOTS.BAG, inventoryBonus: 100, price: 0, category: ITEM_CATEGORIES.ACCESSORIES },
 ];
 
 export const SHOP_ITEMS = BASE_ITEMS.filter((item) => item.price !== undefined);

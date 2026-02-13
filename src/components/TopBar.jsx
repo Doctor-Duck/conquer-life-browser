@@ -1,6 +1,6 @@
 import React from "react";
 
-export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMainMenu, onShowSettings, onShowCheatMenu, showCheatMenu, onShowShop }) {
+export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMainMenu, onShowSettings, onShowCheatMenu, showCheatMenu, onShowShop, currentSaveSlot }) {
   const tabs = [
     { id: "jobs", label: "Work" },
     { id: "skills", label: "Training" },
@@ -41,6 +41,10 @@ export function TopBar({ activeView, ownedBusinessesCount, onNavigate, onShowMai
           </div>
         </div>
         <div className="top-bar-header-actions">
+          <div className="top-bar-save-slot-info">
+            <span className="top-bar-save-slot-label">Save Slot:</span>
+            <span className="top-bar-save-slot-number">Slot {currentSaveSlot || 1}</span>
+          </div>
           <button
             className="top-bar-menu-btn"
             onClick={onShowMainMenu}

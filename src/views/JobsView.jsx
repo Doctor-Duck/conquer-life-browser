@@ -371,47 +371,6 @@ export function JobsView({ state, onChangeFilter, onWorkShift, onStartBusiness }
               })}
             </div>
         )}
-
-        {activeTab === "shifts" && (
-          <section className="card">
-            <div className="card-header">
-              <div>
-                <div className="card-title">Notes & Consequences</div>
-                <div className="card-subtitle">
-                  Illegal work can pay huge, but raises your notoriety and the odds
-                  of getting busted.
-                </div>
-              </div>
-            </div>
-            <ul className="list">
-              <li className="list-item">
-                <div className="list-item-main">
-                  <div className="list-item-title">Illegal Gigs</div>
-                  <div className="list-item-subtitle">
-                    High risk, high reward. Each run adds to your notoriety.
-                  </div>
-                </div>
-                <div className="list-item-meta">
-                  <span className="pill-soft negative">Random bust chance</span>
-                  <span className="pill-soft neutral">Fines & setbacks possible</span>
-                </div>
-              </li>
-              <li className="list-item">
-                <div className="list-item-main">
-                  <div className="list-item-title">Legal Careers</div>
-                  <div className="list-item-subtitle">
-                    Safer, slower, but unlock advanced government paths if you
-                    invest in law and intelligence.
-                  </div>
-                </div>
-                <div className="list-item-meta">
-                  <span className="pill-soft positive">Stable income</span>
-                  <span className="pill-soft neutral">Pairs well with businesses</span>
-                </div>
-              </li>
-            </ul>
-          </section>
-        )}
       </section>
     </div>
   );

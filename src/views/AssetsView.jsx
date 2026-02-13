@@ -10,6 +10,8 @@ import {
   getItemSlotOrCategoryLabel,
   getMaxInventorySize,
   getStorageTierName,
+  getSlotType,
+  BASE_INVENTORY_SIZE,
   wouldEquipBagCauseItemLoss,
   wouldUnequipBagCauseItemLoss,
 } from "../gameCore.js";
@@ -286,7 +288,14 @@ function InventoryView({ state, onEquipItem, onUnequipItem, onDeleteItem, warnin
   const inventory = state.inventory || [];
   const equipment = state.equipment || {};
   const maxSize = getMaxInventorySize(state);
-  const storageTier = getStorageTierName(state);
+  const equippedBag = equipment[EQUIPMENT_SLOTS.BAG];
+  const bagItem = equippedBag ? BASE_ITEMS.find((i) => i.id === equippedBag) : null;
+  const bagSlots = bagItem ? bagItem.inventoryBonus : 0;
+  
+  // Create subtitle showing pockets + bag
+  const subtitle = equippedBag 
+    ? `Pockets (${BASE_INVENTORY_SIZE}) + ${bagItem?.name || "Bag"} (+${bagSlots}) = ${inventory.length}/${maxSize} slots`
+    : `Pockets: ${inventory.length}/${maxSize} slots`;
 
   const equipmentSlots = [
     { id: EQUIPMENT_SLOTS.HEAD, label: "Head" },
@@ -306,16 +315,16 @@ function InventoryView({ state, onEquipItem, onUnequipItem, onDeleteItem, warnin
     const item = BASE_ITEMS.find((i) => i.id === itemId);
     if (!item) return;
 
-    // Check if equipping a bag would cause item loss
+    // Check if equipping a bag would cause item loss (when switching from larger to smaller bag)
     if (slot === EQUIPMENT_SLOTS.BAG && item.type === "bag") {
       if (wouldEquipBagCauseItemLoss(state, itemId)) {
         const currentMaxSize = getMaxInventorySize(state);
-        const newMaxSize = 5 + (item.inventoryBonus || 0);
+        const newMaxSize = BASE_INVENTORY_SIZE + (item.inventoryBonus || 0);
         const currentItems = inventory.length;
         const itemsToLose = currentItems - newMaxSize;
         setWarningDialog({
           type: "equip",
-          message: `Equipping ${item.name} will reduce your inventory capacity from ${currentMaxSize} to ${newMaxSize} slots. You currently have ${currentItems} items, which means ${itemsToLose} item(s) will be lost. Do you want to proceed?`,
+          message: `Equipping ${item.name} will reduce your inventory capacity from ${currentMaxSize} to ${newMaxSize} slots (${BASE_INVENTORY_SIZE} pockets + ${item.inventoryBonus} bag slots). You currently have ${currentItems} items, which means ${itemsToLose} item(s) will be lost. Do you want to proceed?`,
           onConfirm: () => {
             onEquipItem(itemId, slot);
             setWarningDialog(null);
@@ -333,10 +342,10 @@ function InventoryView({ state, onEquipItem, onUnequipItem, onDeleteItem, warnin
     if (wouldUnequipBagCauseItemLoss(state, slot)) {
       const currentMaxSize = getMaxInventorySize(state);
       const currentItems = inventory.length;
-      const itemsToLose = currentItems - 5;
+      const itemsToLose = currentItems - BASE_INVENTORY_SIZE;
       setWarningDialog({
         type: "unequip",
-        message: `Unequipping your bag will reduce your inventory capacity from ${currentMaxSize} to 5 slots (Pockets). You currently have ${currentItems} items, which means ${itemsToLose} item(s) will be lost. Do you want to proceed?`,
+        message: `Unequipping your bag will reduce your inventory capacity from ${currentMaxSize} to ${BASE_INVENTORY_SIZE} slots (Pockets only). You currently have ${currentItems} items, which means ${itemsToLose} item(s) will be lost. Do you want to proceed?`,
         onConfirm: () => {
           onUnequipItem(slot);
           setWarningDialog(null);
@@ -385,19 +394,23 @@ function InventoryView({ state, onEquipItem, onUnequipItem, onDeleteItem, warnin
           <div className="inventory-column-header">
             <div className="inventory-column-title">Inventory</div>
             <div className="inventory-column-subtitle">
-              {storageTier} ({inventory.length}/{maxSize} slots)
+              {subtitle}
             </div>
           </div>
           <div className="inventory-grid">
             {Array.from({ length: maxSize }).map((_, index) => {
               const itemId = inventory[index];
               const item = itemId ? BASE_ITEMS.find((i) => i.id === itemId) : null;
+              const slotType = getSlotType(state, index);
+              const slotClass = slotType.type === "pocket" 
+                ? "inventory-slot-pocket" 
+                : `inventory-slot-bag inventory-slot-bag-${slotType.bagId || "default"}`;
               // Use index as key to ensure uniqueness (slots are fixed positions)
               return (
                 <div
                   key={`slot-${index}`}
-                  className={`inventory-slot ${item ? "inventory-slot-filled" : "inventory-slot-empty"}`}
-                  title={item ? item.description : "Empty slot"}
+                  className={`inventory-slot ${slotClass} ${item ? "inventory-slot-filled" : "inventory-slot-empty"}`}
+                  title={item ? item.description : slotType.type === "pocket" ? "Pocket slot" : `Bag slot (${bagItem?.name || "Bag"})`}
                 >
                   {item ? (
                     <div className="inventory-item">

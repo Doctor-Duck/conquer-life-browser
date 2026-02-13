@@ -11,6 +11,7 @@ import {
   MAX_SKILL_LEVEL,
   BASE_EXP,
   EXP_MULTIPLIER,
+  BASE_SHIFT_EXP,
   SHIFT_CATEGORIES,
   SHIFTS,
   SHIFT_QUALITIES,
@@ -467,14 +468,27 @@ export function calculateTrainToNextLevel(state, skillId) {
     }
   }
   
-  // Calculate days needed
-  // Each training session uses 15 energy
-  // Each day provides 100 energy (assuming full energy at start of day)
-  // So we can do floor(100/15) = 6 sessions per day (with 10 energy left)
-  const sessionsPerDay = Math.floor(100 / energyCost); // 6 sessions per day
-  const days = Math.ceil(sessions / sessionsPerDay);
-  
-  return { sessions, totalCost, days };
+  // Calculate days needed: total energy, energy restored per day (End Day), and days to next level
+  const ENERGY_RESTORED_PER_DAY = 100; // End Day restores to full
+  const totalEnergyNeeded = sessions * energyCost;
+  const sessionsPerDay = Math.floor(ENERGY_RESTORED_PER_DAY / energyCost); // 6 sessions per full day
+  const currentEnergy = state.cheats?.unlimitedEnergy ? 100 : (state.player?.energy ?? 0);
+  const sessionsDoableToday = Math.floor(currentEnergy / energyCost);
+  let days;
+  if (sessionsDoableToday >= sessions) {
+    days = 0; // Can finish in current day = less than 1 day
+  } else {
+    const remainingSessions = sessions - sessionsDoableToday;
+    days = Math.ceil(remainingSessions / sessionsPerDay);
+  }
+
+  return {
+    sessions,
+    totalCost,
+    days,
+    totalEnergyNeeded,
+    energyRestoredPerDay: ENERGY_RESTORED_PER_DAY,
+  };
 }
 
 export function canTakeJob(state, job) {
@@ -706,13 +720,10 @@ export function workShift(state, jobId) {
       state.player.money += baseIncome;
       pushLog(state, `You work a shift as ${job.name} and earn $${baseIncome}.`);
     }
-    // Base skill gain for normal shift
+    // Base skill gain for normal shift (fixed base amount, no scaling)
     const skillToRaise = Object.keys(job.requiredSkills)[0] || SKILL_IDS.CHARISMA;
-    const currentLevel = getSkillLevel(state, skillToRaise);
-    if (currentLevel < MAX_SKILL_LEVEL) {
-      const expForNextLevel = getExpForLevel(currentLevel + 1);
-      const expForCurrentLevel = getExpForLevel(currentLevel);
-      const expToAdd = expForNextLevel - expForCurrentLevel;
+    if (getSkillLevel(state, skillToRaise) < MAX_SKILL_LEVEL) {
+      const expToAdd = BASE_SHIFT_EXP;
       addSkillExp(state, skillToRaise, expToAdd);
       skillExpMod = { [skillToRaise]: expToAdd };
     }
@@ -1240,6 +1251,23 @@ export function getStorageTierName(state) {
   return bagItem?.name || "Pockets";
 }
 
+// Get slot type and bag ID for a given slot index
+// Returns { type: "pocket" | "bag", bagId: string | null }
+export function getSlotType(state, slotIndex) {
+  const BASE_SIZE = BASE_INVENTORY_SIZE;
+  
+  if (slotIndex < BASE_SIZE) {
+    return { type: "pocket", bagId: null };
+  }
+  
+  const equippedBag = state.equipment?.[EQUIPMENT_SLOTS.BAG];
+  if (!equippedBag) {
+    return { type: "pocket", bagId: null };
+  }
+  
+  return { type: "bag", bagId: equippedBag };
+}
+
 // Buy item from shop (only when player is in the same area as the shop)
 export function buyItem(state, itemId) {
   const item = BASE_ITEMS.find((i) => i.id === itemId);
@@ -1273,6 +1301,30 @@ export function buyItem(state, itemId) {
   }
   state.inventory = [...state.inventory, itemId];
   pushLog(state, `You bought ${item.name} for ${formatMoney(item.price)}.`);
+  return state;
+}
+
+// Spawn item (cheat function) - only adds if inventory has space
+export function spawnItem(state, itemId) {
+  const item = BASE_ITEMS.find((i) => i.id === itemId);
+  if (!item) {
+    pushLog(state, "Invalid item ID.");
+    return state;
+  }
+
+  // Check if inventory has space
+  const maxSize = getMaxInventorySize(state);
+  const currentItems = state.inventory?.length || 0;
+  if (currentItems >= maxSize) {
+    pushLog(state, `Your inventory is full. You have ${currentItems}/${maxSize} slots used. Cannot spawn ${item.name}.`);
+    return state;
+  }
+
+  if (!state.inventory) {
+    state.inventory = [];
+  }
+  state.inventory = [...state.inventory, itemId];
+  pushLog(state, `Spawned ${item.name} into your inventory.`);
   return state;
 }
 

@@ -307,10 +307,6 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkS
 
       {/* Footer Buttons */}
       <div className="player-sidebar-footer">
-        <div className="player-sidebar-save-slot-info">
-          <span className="player-sidebar-save-slot-label">Save Slot:</span>
-          <span className="player-sidebar-save-slot-number">Slot {state.currentSaveSlot || 1}</span>
-        </div>
         <button className="btn btn-outline btn-full-width" onClick={onSave}>
           Save
         </button>

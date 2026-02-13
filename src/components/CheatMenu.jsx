@@ -1,5 +1,5 @@
 import React from "react";
-import { BASE_SKILLS, BASE_BUSINESSES, CITIES, CITY_AREAS, MAX_SKILL_LEVEL, getExpForLevel, getSkillLevel } from "../gameCore.js";
+import { BASE_SKILLS, BASE_BUSINESSES, BASE_ITEMS, CITIES, CITY_AREAS, MAX_SKILL_LEVEL, getExpForLevel, getSkillLevel, spawnItem } from "../gameCore.js";
 
 export function CheatMenu({ state, onClose, onApplyCheat }) {
   // Initialize cheats object if it doesn't exist and disable achievements when any cheat is used
@@ -129,6 +129,22 @@ export function CheatMenu({ state, onClose, onApplyCheat }) {
     });
   };
 
+  const handleSpawnItem = (itemId) => {
+    onApplyCheat((s) => {
+      return spawnItem(s, itemId);
+    });
+  };
+
+  // Group items by category for better organization
+  const itemsByCategory = {};
+  BASE_ITEMS.forEach((item) => {
+    const category = item.category || "other";
+    if (!itemsByCategory[category]) {
+      itemsByCategory[category] = [];
+    }
+    itemsByCategory[category].push(item);
+  });
+
   return (
     <div className="cheat-menu-overlay" onClick={onClose}>
       <div className="cheat-menu" onClick={(e) => e.stopPropagation()}>
@@ -240,6 +256,32 @@ export function CheatMenu({ state, onClose, onApplyCheat }) {
                 Max All Skills
               </button>
             </div>
+          </section>
+
+          <section className="cheat-section">
+            <h3>Items</h3>
+            <div style={{ marginBottom: "1rem", fontSize: "12px", color: "#94a3b8" }}>
+              Spawn items into your inventory. Only adds if you have available inventory slots.
+            </div>
+            {Object.entries(itemsByCategory).map(([category, items]) => (
+              <div key={category} style={{ marginBottom: "1rem" }}>
+                <h4 style={{ fontSize: "14px", color: "#94a3b8", marginBottom: "8px", textTransform: "capitalize" }}>
+                  {category}
+                </h4>
+                <div className="cheat-buttons" style={{ flexWrap: "wrap" }}>
+                  {items.map((item) => (
+                    <button
+                      key={item.id}
+                      className="btn btn-outline btn-small"
+                      onClick={() => handleSpawnItem(item.id)}
+                      title={item.description}
+                    >
+                      {item.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </section>
         </div>
       </div>

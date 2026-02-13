@@ -125,7 +125,11 @@ export function SkillsView({ state, onTrainSkill, onTrainSkillToNextLevel }) {
                       >
                         Train to Level {level + 1}
                         <div className="skill-train-to-next-details">
-                          {formatMoney(trainToNext.totalCost)} · {trainToNext.days} day{trainToNext.days !== 1 ? "s" : ""}
+                          {formatMoney(trainToNext.totalCost)} · ⚡ {trainToNext.totalEnergyNeeded} energy
+                          {" · "}
+                          {trainToNext.days === 0
+                            ? "< 1 day"
+                            : `${trainToNext.days} day${trainToNext.days !== 1 ? "s" : ""} (${trainToNext.energyRestoredPerDay} energy/day)`}
                         </div>
                       </button>
                     )}
@@ -141,48 +145,6 @@ export function SkillsView({ state, onTrainSkill, onTrainSkillToNextLevel }) {
           <div className="empty-state">Perks system coming soon...</div>
         )}
       </section>
-
-      {activeTab === "skills" && (
-      <section className="card">
-        <div className="card-header">
-          <div>
-            <div className="card-title">Skill Synergies</div>
-            <div className="card-subtitle">
-              How different builds unlock entirely different lives.
-            </div>
-          </div>
-        </div>
-        <ul className="list">
-          <li className="list-item">
-            <div className="list-item-main">
-              <div className="list-item-title">Lawful Power</div>
-              <div className="list-item-subtitle">
-                Intelligence + Law + Charisma opens up lawyers, judges, and
-                eventually governorship.
-              </div>
-            </div>
-          </li>
-          <li className="list-item">
-            <div className="list-item-main">
-              <div className="list-item-title">Street Empire</div>
-              <div className="list-item-subtitle">
-                Street Smarts + Business turns illegal jobs and black market
-                ventures into a serious empire.
-              </div>
-            </div>
-          </li>
-          <li className="list-item">
-            <div className="list-item-main">
-              <div className="list-item-title">Physical Grind</div>
-              <div className="list-item-subtitle">
-                Strength keeps you on your feet for demanding jobs, and helps
-                survive the rougher corners of the city.
-              </div>
-            </div>
-          </li>
-        </ul>
-      </section>
-      )}
     </div>
   );
 }
