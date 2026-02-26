@@ -1,5 +1,5 @@
 import React from "react";
-import { SHIFTS, formatMoney } from "../gameCore.js";
+import { SHIFTS, formatMoney, getMaxEnergy, getMaxHealth } from "../gameCore.js";
 
 export function OverviewView({ state }) {
   const p = state.player;
@@ -19,42 +19,39 @@ export function OverviewView({ state }) {
           </div>
         </div>
 
-        <div className="stat-row">
+        <div className="stat-row stat-row-money">
           <div className="stat-label">
             <span>Money</span>
           </div>
           <div className="stat-value">{formatMoney(p.money)}</div>
         </div>
-        <div className="stat-row">
+        <div className="stat-row stat-row-energy">
           <div className="stat-label">
             <span>Energy</span>
           </div>
-          <div className="stat-value">{p.energy}/100</div>
+          <div className="stat-value">{Math.min(p.energy, getMaxEnergy(state))}/{getMaxEnergy(state)}</div>
         </div>
         <div className="progress-bar">
           <div
-            className="progress-bar-fill"
-            style={{ transform: `scaleX(${p.energy / 100})` }}
+            className="progress-bar-fill progress-bar-fill-energy"
+            style={{ transform: `scaleX(${Math.min(p.energy, getMaxEnergy(state)) / getMaxEnergy(state)})` }}
           />
         </div>
 
-        <div className="stat-row">
+        <div className="stat-row stat-row-health">
           <div className="stat-label">
             <span>Health</span>
           </div>
-          <div className="stat-value">{p.health}/100</div>
+          <div className="stat-value">{Math.min(p.health, getMaxHealth(state))}/{getMaxHealth(state)}</div>
         </div>
         <div className="progress-bar">
           <div
-            className="progress-bar-fill"
-            style={{
-              transform: `scaleX(${p.health / 100})`,
-              background: "linear-gradient(90deg,#2dd4bf,#0ea5e9)",
-            }}
+            className="progress-bar-fill progress-bar-fill-health"
+            style={{ transform: `scaleX(${Math.min(p.health, getMaxHealth(state)) / getMaxHealth(state)})` }}
           />
         </div>
 
-        <div className="stat-row">
+        <div className="stat-row stat-row-notoriety">
           <div className="stat-label">
             <span>Notoriety</span>
           </div>
@@ -62,11 +59,8 @@ export function OverviewView({ state }) {
         </div>
         <div className="progress-bar">
           <div
-            className="progress-bar-fill"
-            style={{
-              transform: `scaleX(${p.notoriety / 100})`,
-              background: "linear-gradient(90deg,#f97316,#ef4444)",
-            }}
+            className="progress-bar-fill progress-bar-fill-notoriety"
+            style={{ transform: `scaleX(${p.notoriety / 100})` }}
           />
         </div>
 

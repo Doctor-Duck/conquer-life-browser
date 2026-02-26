@@ -4,7 +4,7 @@ import {
   BASE_SKILLS,
   canStartBusiness,
   formatMoney,
-  getSkillLevel,
+  getEffectiveSkillLevel,
   getBusinessesForLocation,
   getBusinessDisplayName,
   canSeeBusinessDetails,
@@ -100,7 +100,7 @@ export function BusinessesView({ state, onStartBusiness }) {
                             const skillName =
                               BASE_SKILLS.find((s) => s.id === skillId)?.name ??
                               skillId;
-                            const current = getSkillLevel(state, skillId);
+                            const current = getEffectiveSkillLevel(state, skillId);
                             const meets = current >= level;
                             return (
                               <div

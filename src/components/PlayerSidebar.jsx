@@ -1,8 +1,8 @@
 import React from "react";
-import { SHIFTS, BASE_SKILLS, CHARACTER_BACKGROUNDS, STARTING_LOCATIONS, formatMoney, formatTime, getSkillLevel, getCityById, getAreaById } from "../gameCore.js";
+import { SHIFTS, BASE_SKILLS, MAX_SKILL_LEVEL, CHARACTER_BACKGROUNDS, STARTING_LOCATIONS, formatMoney, formatTime, getSkillLevel, getSkillLevelBonus, getEffectiveSkillLevel, getMaxEnergy, getMaxHealth, getCityById, getAreaById } from "../gameCore.js";
 import { SmartTooltip } from "./SmartTooltip.jsx";
 
-export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkShift }) {
+export function PlayerSidebar({ state, moneyDelta, onAdvanceDay, onSave, onNavigate, onWorkShift }) {
   const p = state.player;
   const currentJob =
     state.currentJobId && SHIFTS.find((j) => j.id === state.currentJobId);
@@ -125,43 +125,47 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkS
           )}
         </div>
 
-        <div className="stat-row">
+        <div className="stat-row stat-row-money">
           <div className="stat-label">
             <span>Money</span>
           </div>
-          <div className="stat-value">{formatMoney(p.money)}</div>
+          <div className="stat-value stat-value-money">
+            {moneyDelta != null && moneyDelta.amount !== 0 && (
+              <span className={`money-delta ${moneyDelta.amount > 0 ? "money-delta-earn" : "money-delta-spend"}`}>
+                {moneyDelta.amount > 0 ? `+${formatMoney(moneyDelta.amount)}` : formatMoney(moneyDelta.amount)}
+              </span>
+            )}
+            {formatMoney(p.money)}
+          </div>
         </div>
 
-        <div className="stat-row">
+        <div className="stat-row stat-row-energy">
           <div className="stat-label">
             <span>Energy</span>
           </div>
-          <div className="stat-value">{p.energy}/100</div>
+          <div className="stat-value">{Math.min(p.energy, getMaxEnergy(state))}/{getMaxEnergy(state)}</div>
         </div>
         <div className="progress-bar">
           <div
-            className="progress-bar-fill"
-            style={{ transform: `scaleX(${p.energy / 100})` }}
+            className="progress-bar-fill progress-bar-fill-energy"
+            style={{ transform: `scaleX(${Math.min(p.energy, getMaxEnergy(state)) / getMaxEnergy(state)})` }}
           />
         </div>
 
-        <div className="stat-row">
+        <div className="stat-row stat-row-health">
           <div className="stat-label">
             <span>Health</span>
           </div>
-          <div className="stat-value">{p.health}/100</div>
+          <div className="stat-value">{Math.min(p.health, getMaxHealth(state))}/{getMaxHealth(state)}</div>
         </div>
         <div className="progress-bar">
           <div
-            className="progress-bar-fill"
-            style={{
-              transform: `scaleX(${p.health / 100})`,
-              background: "linear-gradient(90deg,#2dd4bf,#0ea5e9)",
-            }}
+            className="progress-bar-fill progress-bar-fill-health"
+            style={{ transform: `scaleX(${Math.min(p.health, getMaxHealth(state)) / getMaxHealth(state)})` }}
           />
         </div>
 
-        <div className="stat-row">
+        <div className="stat-row stat-row-notoriety">
           <div className="stat-label">
             <span>Notoriety</span>
           </div>
@@ -169,11 +173,8 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkS
         </div>
         <div className="progress-bar">
           <div
-            className="progress-bar-fill"
-            style={{
-              transform: `scaleX(${p.notoriety / 100})`,
-              background: "linear-gradient(90deg,#f97316,#ef4444)",
-            }}
+            className="progress-bar-fill progress-bar-fill-notoriety"
+            style={{ transform: `scaleX(${p.notoriety / 100})` }}
           />
         </div>
 
@@ -215,13 +216,20 @@ export function PlayerSidebar({ state, onAdvanceDay, onSave, onNavigate, onWorkS
         </div>
         <div className="player-skills-list">
           {BASE_SKILLS.map((skill) => {
-            const level = getSkillLevel(state, skill.id);
-            const fraction = Math.min(level / 100, 1);
+            const actualLevel = getSkillLevel(state, skill.id);
+            const levelBonus = getSkillLevelBonus(state, skill.id);
+            const effectiveLevel = getEffectiveSkillLevel(state, skill.id);
+            const fraction = Math.min(effectiveLevel / MAX_SKILL_LEVEL, 1);
             return (
-              <div key={skill.id} className="player-skill-item">
+              <div key={skill.id} className={`player-skill-item player-skill-${skill.id}`}>
                 <div className="player-skill-header">
                   <span className="player-skill-name">{skill.name}</span>
-                  <span className="player-skill-level">Lv {level}</span>
+                  <span className="player-skill-level">
+                    Lv {actualLevel}
+                    {levelBonus > 0 ? (
+                      <span className="player-skill-level-bonus"> (+{levelBonus}) = {effectiveLevel}</span>
+                    ) : null}
+                  </span>
                 </div>
                 <div className="player-skill-progress-bar">
                   <div

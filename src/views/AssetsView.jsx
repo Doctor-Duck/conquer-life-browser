@@ -8,6 +8,7 @@ import {
   getAreaById,
   getCityById,
   getItemSlotOrCategoryLabel,
+  getItemBonusLines,
   getMaxInventorySize,
   getStorageTierName,
   getSlotType,
@@ -291,6 +292,8 @@ function InventoryView({ state, onEquipItem, onUnequipItem, onDeleteItem, warnin
   const equippedBag = equipment[EQUIPMENT_SLOTS.BAG];
   const bagItem = equippedBag ? BASE_ITEMS.find((i) => i.id === equippedBag) : null;
   const bagSlots = bagItem ? bagItem.inventoryBonus : 0;
+  const [viewItemId, setViewItemId] = React.useState(null);
+  const viewItem = viewItemId ? BASE_ITEMS.find((i) => i.id === viewItemId) : null;
   
   // Create subtitle showing pockets + bag
   const subtitle = equippedBag 
@@ -389,6 +392,30 @@ function InventoryView({ state, onEquipItem, onUnequipItem, onDeleteItem, warnin
           </div>
         </div>
       )}
+      {viewItem && (
+        <div className="item-detail-overlay" onClick={() => setViewItemId(null)}>
+          <div className="item-detail-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="item-detail-header">
+              <div className="item-detail-name">{viewItem.name}</div>
+              <button className="item-detail-close" onClick={() => setViewItemId(null)} title="Close">×</button>
+            </div>
+            {getItemSlotOrCategoryLabel(viewItem) && (
+              <div className="item-detail-slot">{getItemSlotOrCategoryLabel(viewItem)}</div>
+            )}
+            <div className="item-detail-description">{viewItem.description}</div>
+            {getItemBonusLines(viewItem).length > 0 && (
+              <div className="item-detail-bonuses">
+                <div className="item-detail-bonuses-title">When equipped:</div>
+                <ul className="item-detail-bonuses-list">
+                  {getItemBonusLines(viewItem).map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <div className="inventory-columns">
         <div className="inventory-column">
           <div className="inventory-column-header">
@@ -418,25 +445,34 @@ function InventoryView({ state, onEquipItem, onUnequipItem, onDeleteItem, warnin
                       {getItemSlotOrCategoryLabel(item) && (
                         <div className="inventory-item-slot">{getItemSlotOrCategoryLabel(item)}</div>
                       )}
-                      {item.slot && (
+                      <div className="inventory-item-actions">
                         <button
-                          className="inventory-item-equip"
-                          onClick={() => handleEquipItem(itemId, item.slot)}
-                          title={`Equip to ${equipmentSlots.find((s) => s.id === item.slot)?.label || item.slot}`}
+                          className="inventory-item-view"
+                          onClick={() => setViewItemId(itemId)}
+                          title="View description and bonuses"
                         >
-                          Equip
+                          View
                         </button>
-                      )}
-                      <button
-                        className="inventory-item-delete"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteItem(itemId);
-                        }}
-                        title="Delete item"
-                      >
-                        ×
-                      </button>
+                        {item.slot && (
+                          <button
+                            className="inventory-item-equip"
+                            onClick={() => handleEquipItem(itemId, item.slot)}
+                            title={`Equip to ${equipmentSlots.find((s) => s.id === item.slot)?.label || item.slot}`}
+                          >
+                            Equip
+                          </button>
+                        )}
+                        <button
+                          className="inventory-item-delete"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteItem(itemId);
+                          }}
+                          title="Delete item"
+                        >
+                          ×
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="inventory-slot-empty-text">Empty</div>
@@ -464,6 +500,13 @@ function InventoryView({ state, onEquipItem, onUnequipItem, onDeleteItem, warnin
                   {item ? (
                     <div className="equipment-item">
                       <div className="equipment-item-name">{item.name}</div>
+                      {getItemBonusLines(item).length > 0 && (
+                        <div className="equipment-item-bonuses">
+                          {getItemBonusLines(item).map((line, i) => (
+                            <div key={i} className="equipment-item-bonus-line" title={line}>{line}</div>
+                          ))}
+                        </div>
+                      )}
                       <button
                         className="equipment-item-unequip"
                         onClick={() => handleUnequipItem(slot.id)}

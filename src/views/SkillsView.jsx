@@ -1,17 +1,22 @@
 import React from "react";
-import { 
-  BASE_SKILLS, 
-  formatMoney, 
-  getSkillLevel, 
+import {
+  BASE_SKILLS,
+  formatMoney,
+  getSkillLevel,
+  getSkillLevelBonus,
+  getEffectiveSkillLevel,
   getSkillExp,
   getExpForLevel,
-  getExpNeededForNextLevel,
+  getTrainSkillExpPerClick,
   calculateTrainToNextLevel,
-  MAX_SKILL_LEVEL
+  getEquippedSkillBonuses,
+  MAX_SKILL_LEVEL,
 } from "../gameCore.js";
 
 export function SkillsView({ state, onTrainSkill, onTrainSkillToNextLevel }) {
   const [activeTab, setActiveTab] = React.useState("skills");
+  const { levelBonuses, expBonuses } = getEquippedSkillBonuses(state);
+  const hasAnyBonuses = Object.keys(levelBonuses).length > 0 || Object.keys(expBonuses).length > 0;
 
   return (
     <div className="skills-view-layout">
@@ -41,104 +46,160 @@ export function SkillsView({ state, onTrainSkill, onTrainSkillToNextLevel }) {
         </div>
 
         {activeTab === "skills" && (
-
-        <div className="skills-grid-new">
-          {BASE_SKILLS.map((skill) => {
-            const level = getSkillLevel(state, skill.id);
-            const exp = getSkillExp(state, skill.id);
-            const expForCurrentLevel = getExpForLevel(level);
-            const expForNextLevel = getExpForLevel(level + 1);
-            const expNeeded = expForNextLevel - expForCurrentLevel;
-            const currentExpProgress = exp - expForCurrentLevel;
-            const fraction = level >= MAX_SKILL_LEVEL ? 1 : currentExpProgress / expNeeded;
-            const cost = 30 + level * 5;
-            const energyCost = 15;
-            const isMaxed = level >= MAX_SKILL_LEVEL;
-            const trainToNext = calculateTrainToNextLevel(state, skill.id);
-
-            return (
-              <article className="skill-card" key={skill.id}>
-                <div className="skill-card-header">
-                  <div className="skill-card-title-row">
-                    <h3 className="skill-card-title">{skill.name}</h3>
-                    <span className="skill-level-badge">
-                      Level {level}/{MAX_SKILL_LEVEL}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="skill-card-body">
-                  <div className="skill-progress-section">
-                    <div className="skill-progress-bar">
-                      <div
-                        className="skill-progress-fill"
-                        style={{ transform: `scaleX(${fraction})` }}
-                      />
-                    </div>
-                    <div className="skill-progress-text">
-                      {isMaxed 
-                        ? "Max Level" 
-                        : `${currentExpProgress}/${expNeeded} EXP to Level ${level + 1}`}
-                    </div>
-                  </div>
-
-                  <div className="skill-stats">
-                    <div className="skill-stat">
-                      <span className="skill-stat-label">Current Level</span>
-                      <span className="skill-stat-value">{level}</span>
-                    </div>
-                    <div className="skill-stat">
-                      <span className="skill-stat-label">Total EXP</span>
-                      <span className="skill-stat-value">{exp.toLocaleString()}</span>
-                    </div>
-                    <div className="skill-stat">
-                      <span className="skill-stat-label">Training Cost</span>
-                      <span className="skill-stat-value skill-stat-money">
-                        {formatMoney(cost)}
+          <>
+            {hasAnyBonuses && (
+              <div className="skills-boosts-summary">
+                <div className="skills-boosts-title">Boosts from equipped items</div>
+                <div className="skills-boosts-list">
+                  {Object.entries(levelBonuses).map(([skillId, bonus]) => {
+                    const skill = BASE_SKILLS.find((s) => s.id === skillId);
+                    return (
+                      <span key={`lvl-${skillId}`} className="skills-boost-pill skills-boost-level">
+                        +{bonus} {skill?.name ?? skillId} (level)
                       </span>
-                    </div>
-                    <div className="skill-stat">
-                      <span className="skill-stat-label">Energy Cost</span>
-                      <span className="skill-stat-value skill-stat-energy">
-                        ⚡ {energyCost} Energy
+                    );
+                  })}
+                  {Object.entries(expBonuses).map(([skillId, mult]) => {
+                    const skill = BASE_SKILLS.find((s) => s.id === skillId);
+                    const pct = Math.round((mult - 1) * 100);
+                    return (
+                      <span key={`exp-${skillId}`} className="skills-boost-pill skills-boost-exp">
+                        +{pct}% {skill?.name ?? skillId} XP when training
                       </span>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
+              </div>
+            )}
 
-                <div className="skill-card-footer">
-                  <div className="skill-card-buttons">
-                    <button
-                      className={`btn ${isMaxed ? "btn-outline" : "btn-primary"} skill-train-button ${
-                        isMaxed ? "disabled" : ""
-                      }`}
-                      onClick={() => onTrainSkill(skill.id)}
-                      disabled={isMaxed}
-                    >
-                      {isMaxed ? "Maxed" : `Train (${formatMoney(cost)})`}
-                    </button>
-                    {!isMaxed && trainToNext.sessions > 0 && (
-                      <button
-                        className="btn btn-outline skill-train-to-next-button"
-                        onClick={() => onTrainSkillToNextLevel(skill.id)}
-                        disabled={state.player.money < trainToNext.totalCost}
-                      >
-                        Train to Level {level + 1}
-                        <div className="skill-train-to-next-details">
-                          {formatMoney(trainToNext.totalCost)} · ⚡ {trainToNext.totalEnergyNeeded} energy
-                          {" · "}
-                          {trainToNext.days === 0
-                            ? "< 1 day"
-                            : `${trainToNext.days} day${trainToNext.days !== 1 ? "s" : ""} (${trainToNext.energyRestoredPerDay} energy/day)`}
+            <div className="skills-grid-new">
+              {BASE_SKILLS.map((skill) => {
+                const actualLevel = getSkillLevel(state, skill.id);
+                const levelBonus = getSkillLevelBonus(state, skill.id);
+                const effectiveLevel = getEffectiveSkillLevel(state, skill.id);
+                const exp = getSkillExp(state, skill.id);
+                const expForCurrentLevel = getExpForLevel(actualLevel);
+                const expForNextLevel = getExpForLevel(actualLevel + 1);
+                const expNeeded = expForNextLevel - expForCurrentLevel;
+                const currentExpProgress = Math.max(0, exp - expForCurrentLevel);
+                const fraction = actualLevel >= MAX_SKILL_LEVEL ? 1 : (expNeeded > 0 ? currentExpProgress / expNeeded : 0);
+                const cost = 30 + actualLevel * 5;
+                const energyCost = 15;
+                const isMaxed = actualLevel >= MAX_SKILL_LEVEL;
+                const trainToNext = calculateTrainToNextLevel(state, skill.id);
+                const expPerClick = getTrainSkillExpPerClick(state, skill.id);
+
+                return (
+                  <article className={`skill-card skill-card-${skill.id}`} key={skill.id}>
+                    <div className="skill-card-header">
+                      <div className="skill-card-title-group">
+                        <h3 className="skill-card-title">{skill.name}</h3>
+                        <span className="skill-level-badge">
+                          Level {actualLevel}/{MAX_SKILL_LEVEL}
+                          {levelBonus > 0 && (
+                            <span className="skill-level-bonus"> (+{levelBonus}) = {effectiveLevel}</span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="skill-progress-text skill-progress-text-top">
+                        {isMaxed
+                          ? "Max Level"
+                          : `${currentExpProgress}/${expNeeded} EXP to Level ${actualLevel + 1}`}
+                      </div>
+                    </div>
+
+                    <div className="skill-card-body">
+                      <div className="skill-progress-section">
+                        <div className="skill-progress-bar">
+                          <div
+                            className="skill-progress-fill"
+                            style={{ transform: `scaleX(${fraction})` }}
+                          />
                         </div>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                      </div>
+
+                      <div className="skill-stats">
+                        <div className="skill-stat skill-stat-row-1">
+                          <span className="skill-stat-label">Actual Level</span>
+                          <span className="skill-stat-value">{actualLevel}</span>
+                        </div>
+                        {levelBonus > 0 && (
+                          <div className="skill-stat skill-stat-row-1">
+                            <span className="skill-stat-label">From equipment</span>
+                            <span className="skill-stat-value skill-stat-bonus">+{levelBonus} → {effectiveLevel}</span>
+                          </div>
+                        )}
+                        <div className="skill-stat skill-stat-row-1">
+                          <span className="skill-stat-label">Total EXP</span>
+                          <span className="skill-stat-value">{exp.toLocaleString()}</span>
+                        </div>
+                        <div className="skill-stat skill-stat-row-2">
+                          <span className="skill-stat-label">Training Cost</span>
+                          <span className="skill-stat-value skill-stat-money">
+                            {formatMoney(cost)}
+                          </span>
+                        </div>
+                        <div className="skill-stat skill-stat-row-2">
+                          <span className="skill-stat-label">Energy Cost</span>
+                          <span className="skill-stat-value skill-stat-energy">
+                            ⚡ {energyCost}
+                          </span>
+                        </div>
+                        <div className="skill-stat skill-stat-exp-per-click skill-stat-row-3">
+                          <span className="skill-stat-label">EXP per Train</span>
+                          <span className="skill-stat-value">
+                            {expPerClick.bonusExp > 0 ? (
+                              <>
+                                <span className="skill-exp-base">{expPerClick.baseExp}</span>
+                                <span className="skill-exp-plus"> +{expPerClick.bonusExp} (equipment) </span>
+                                <span className="skill-exp-equals">= {expPerClick.totalExp} EXP</span>
+                              </>
+                            ) : (
+                              <span>{expPerClick.totalExp} EXP</span>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="skill-card-footer">
+                      <div className="skill-card-buttons">
+                        <button
+                          className={`btn ${isMaxed ? "btn-outline" : "btn-primary"} skill-train-button ${
+                            isMaxed ? "disabled" : ""
+                          }`}
+                          onClick={() => onTrainSkill(skill.id)}
+                          disabled={isMaxed}
+                        >
+                          {isMaxed ? "Maxed" : `Train (${formatMoney(cost)})`}
+                        </button>
+                        {!isMaxed && trainToNext.sessions > 0 && (
+                          <button
+                            className="btn btn-outline skill-train-to-next-button"
+                            onClick={() => onTrainSkillToNextLevel(skill.id)}
+                            disabled={state.player.money < trainToNext.totalCost}
+                          >
+                            Train to Level {actualLevel + 1}
+                            <div className="skill-train-to-next-details">
+                              <span className="skill-train-to-next-exp">
+                                Total EXP: {trainToNext.totalExpGained.toLocaleString()}
+                              </span>
+                              {" · "}
+                              {formatMoney(trainToNext.totalCost)} · ⚡ {trainToNext.totalEnergyNeeded} energy
+                              {" · "}
+                              {trainToNext.days === 0
+                                ? "< 1 day"
+                                : `${trainToNext.days} day${trainToNext.days !== 1 ? "s" : ""} (${trainToNext.energyRestoredPerDay} energy/day)`}
+                            </div>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </>
         )}
 
         {activeTab === "perks" && (

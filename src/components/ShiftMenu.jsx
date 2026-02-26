@@ -15,13 +15,16 @@ const QUALITY_CLASS = {
   [SHIFT_QUALITIES.NORMAL]: "shift-quality-normal",
   [SHIFT_QUALITIES.GOOD]: "shift-quality-good",
   [SHIFT_QUALITIES.VERY_GOOD]: "shift-quality-very-good",
+  busted: "shift-quality-busted",
 };
 
 export function ShiftMenu({ state, onClose, onWorkAnotherShift }) {
   const result = state?.lastShiftResult;
   if (!result) return null;
 
-  const { jobId, jobName, quality, description, effects } = result;
+  const { jobId, jobName, quality, busted, description, effects } = result;
+  const displayQuality = busted ? "busted" : quality;
+  const displayLabel = busted ? "BUSTED" : (QUALITY_LABELS[quality] || quality);
   const job = SHIFTS.find((j) => j.id === jobId);
   const inCorrectLocation =
     job &&
@@ -35,14 +38,11 @@ export function ShiftMenu({ state, onClose, onWorkAnotherShift }) {
       <div className="shift-menu-modal" onClick={(e) => e.stopPropagation()}>
         <div className="shift-menu-header">
           <div className="shift-menu-title">Shift</div>
-          <button type="button" className="shift-menu-close" onClick={onClose}>
-            ×
-          </button>
         </div>
         <div className="shift-menu-content">
           <div className="shift-menu-job-name">{jobName}</div>
-          <div className={`shift-menu-quality-badge ${QUALITY_CLASS[quality] || "shift-quality-normal"}`}>
-            {QUALITY_LABELS[quality] || quality}
+          <div className={`shift-menu-quality-badge ${QUALITY_CLASS[displayQuality] || "shift-quality-normal"}`}>
+            {displayLabel}
           </div>
           <p className="shift-menu-description">{description}</p>
 
@@ -94,9 +94,6 @@ export function ShiftMenu({ state, onClose, onWorkAnotherShift }) {
             }
           >
             Work Another Shift
-          </button>
-          <button type="button" className="btn btn-outline" onClick={onClose}>
-            Close
           </button>
         </div>
       </div>

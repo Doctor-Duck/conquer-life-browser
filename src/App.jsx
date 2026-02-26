@@ -55,8 +55,10 @@ export function App() {
   const [showCheatMenu, setShowCheatMenu] = React.useState(false);
   const [showShop, setShowShop] = React.useState(false);
   const [showShiftMenu, setShowShiftMenu] = React.useState(false);
+  const [moneyDelta, setMoneyDelta] = React.useState(null);
   const autoSaveTimerRef = React.useRef(null);
   const travelCooldownTimerRef = React.useRef(null);
+  const prevMoneyRef = React.useRef(undefined);
 
   React.useEffect(() => {
     // Check settings to determine initial view
@@ -127,6 +129,41 @@ export function App() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges, appView]);
 
+  // Reset money ref when leaving game so we don't show delta on load/re-enter
+  React.useEffect(() => {
+    if (appView !== "game") prevMoneyRef.current = undefined;
+  }, [appView]);
+
+  // Track money changes for sidebar delta display
+  React.useEffect(() => {
+    if (appView !== "game" || !state?.player) return;
+    // When a shift just completed, don't overwrite; the shift effect sets delta from lastShiftResult.moneyDelta
+    if (state?.lastShiftResult) {
+      prevMoneyRef.current = state.player.money;
+      return;
+    }
+    const money = state.player.money;
+    if (prevMoneyRef.current !== undefined && prevMoneyRef.current !== money) {
+      setMoneyDelta({ amount: money - prevMoneyRef.current, at: Date.now() });
+    }
+    prevMoneyRef.current = money;
+  }, [appView, state?.player?.money, state?.lastShiftResult]);
+
+  // When a shift completes, use the shift result's moneyDelta so the sidebar shows correct sign (negative for losses)
+  React.useEffect(() => {
+    if (appView !== "game" || !state?.lastShiftResult) return;
+    const delta = state.lastShiftResult.moneyDelta;
+    if (delta === undefined) return;
+    setMoneyDelta({ amount: delta, at: Date.now() });
+  }, [appView, state?.lastShiftResult]);
+
+  // Clear money delta after 3 seconds
+  React.useEffect(() => {
+    if (!moneyDelta) return;
+    const t = setTimeout(() => setMoneyDelta(null), 3000);
+    return () => clearTimeout(t);
+  }, [moneyDelta]);
+
   const updateState = React.useCallback((updater) => {
     setState((prev) => {
       const base = prev && prev.player ? prev : createNewGameState();
@@ -170,12 +207,14 @@ export function App() {
     setState((prev) => ({ ...prev, jobsFilter: filter }));
   };
 
+  // Run workShift once outside setState so Strict Mode doesn't run it twice (which made bad shifts show positive delta)
   const handleWorkShift = (jobId) => {
-    updateState((s) => {
-      workShift(s, jobId);
-      s.currentJobId = jobId;
-      return s;
-    });
+    const base = state && state.player ? state : createNewGameState();
+    const next = cloneState(base);
+    workShift(next, jobId);
+    next.currentJobId = jobId;
+    setState(next);
+    setHasUnsavedChanges(true);
   };
 
   React.useEffect(() => {
@@ -186,10 +225,11 @@ export function App() {
   }, [state?.requestOpenShiftMenu]);
 
   const handleWorkAnotherShift = (jobId) => {
-    updateState((s) => {
-      workShift(s, jobId);
-      return s;
-    });
+    const base = state && state.player ? state : createNewGameState();
+    const next = cloneState(base);
+    workShift(next, jobId);
+    setState(next);
+    setHasUnsavedChanges(true);
     setShowShiftMenu(true);
   };
 
@@ -561,6 +601,7 @@ export function App() {
       </main>
       <PlayerSidebar
         state={state}
+        moneyDelta={moneyDelta}
         onAdvanceDay={handleAdvanceDay}
         onSave={handleSave}
         onNavigate={handleNavigate}

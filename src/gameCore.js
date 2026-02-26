@@ -17,6 +17,7 @@ import {
   SHIFT_QUALITIES,
   SHIFT_QUALITY_RARITIES,
   SHIFT_EVENTS,
+  SHIFT_NORMAL_OUTCOMES,
   BASE_BUSINESSES,
   CITY_AREAS,
   CITIES,
@@ -401,10 +402,86 @@ export function getLevelFromExp(totalExp) {
   return level;
 }
 
+// Base energy and health (before equipment bonuses)
+const BASE_ENERGY = 100;
+const BASE_HEALTH = 100;
+
+// Get max energy from base + equipped item bonuses
+export function getMaxEnergy(state) {
+  let bonus = 0;
+  const equipment = state.equipment || {};
+  for (const itemId of Object.values(equipment)) {
+    const item = BASE_ITEMS.find((i) => i.id === itemId);
+    if (item?.energyBonus) bonus += item.energyBonus;
+  }
+  return BASE_ENERGY + bonus;
+}
+
+// Get max health from base + equipped item bonuses
+export function getMaxHealth(state) {
+  let bonus = 0;
+  const equipment = state.equipment || {};
+  for (const itemId of Object.values(equipment)) {
+    const item = BASE_ITEMS.find((i) => i.id === itemId);
+    if (item?.healthBonus) bonus += item.healthBonus;
+  }
+  return BASE_HEALTH + bonus;
+}
+
 // Get current skill level from EXP
 export function getSkillLevel(state, skillId) {
   const exp = state.skills[skillId] ?? 0;
   return getLevelFromExp(exp);
+}
+
+// Get level bonus from equipped items only (actual level is unchanged; this is the "invisible" boost)
+export function getSkillLevelBonus(state, skillId) {
+  let bonus = 0;
+  const equipment = state.equipment || {};
+  for (const itemId of Object.values(equipment)) {
+    const item = BASE_ITEMS.find((i) => i.id === itemId);
+    const levelBonus = item?.skillLevelBonus?.[skillId];
+    if (levelBonus) bonus += levelBonus;
+  }
+  return bonus;
+}
+
+// Get effective skill level (actual level + equipment bonus; what jobs/mechanics use)
+export function getEffectiveSkillLevel(state, skillId) {
+  return getSkillLevel(state, skillId) + getSkillLevelBonus(state, skillId);
+}
+
+// Get total skill bonuses from all equipped items for display in Skills view
+export function getEquippedSkillBonuses(state) {
+  const levelBonuses = {};
+  const expBonuses = {};
+  const equipment = state.equipment || {};
+  for (const itemId of Object.values(equipment)) {
+    const item = BASE_ITEMS.find((i) => i.id === itemId);
+    if (item?.skillLevelBonus && typeof item.skillLevelBonus === "object") {
+      for (const [skillId, levels] of Object.entries(item.skillLevelBonus)) {
+        if (levels > 0) levelBonuses[skillId] = (levelBonuses[skillId] ?? 0) + levels;
+      }
+    }
+    if (item?.skillExpBonus && typeof item.skillExpBonus === "object") {
+      for (const [skillId, mult] of Object.entries(item.skillExpBonus)) {
+        if (mult > 1) expBonuses[skillId] = (expBonuses[skillId] ?? 1) * mult;
+      }
+    }
+  }
+  return { levelBonuses, expBonuses };
+}
+
+// Get skill EXP multiplier from equipped items (e.g. 1.1 = +10% when training that skill)
+export function getSkillExpMultiplier(state, skillId) {
+  let mult = 1;
+  const equipment = state.equipment || {};
+  for (const itemId of Object.values(equipment)) {
+    const item = BASE_ITEMS.find((i) => i.id === itemId);
+    const m = item?.skillExpBonus?.[skillId];
+    if (m) mult *= m;
+  }
+  return mult;
 }
 
 // Get current skill EXP
@@ -428,55 +505,64 @@ export function getExpNeededForNextLevel(state, skillId) {
   return expForNextLevel - currentExp;
 }
 
-// Calculate training cost and sessions needed to reach next level
+// EXP gained from one Train click (for display in Skills view)
+export function getTrainSkillExpPerClick(state, skillId) {
+  const currentLevel = getSkillLevel(state, skillId);
+  const baseMoneyCost = 30;
+  const moneyCost = baseMoneyCost + currentLevel * 5;
+  const baseExp = Math.max(1, Math.floor(moneyCost * (1 - currentLevel * 0.005)));
+  const multiplier = getSkillExpMultiplier(state, skillId);
+  const totalExp = Math.floor(baseExp * multiplier);
+  const bonusExp = totalExp - baseExp;
+  return { baseExp, multiplier, totalExp, bonusExp };
+}
+
+// Calculate training cost and sessions needed to reach next level (matches trainSkillToNextLevel logic including EXP multiplier)
 export function calculateTrainToNextLevel(state, skillId) {
   const currentLevel = getSkillLevel(state, skillId);
   if (currentLevel >= MAX_SKILL_LEVEL) {
-    return { sessions: 0, totalCost: 0, days: 0 };
+    return { sessions: 0, totalCost: 0, days: 0, totalExpGained: 0 };
   }
 
   const currentExp = getSkillExp(state, skillId);
-  const expForNextLevel = getExpForLevel(currentLevel + 1);
-  const expNeeded = expForNextLevel - currentExp;
   
   const energyCost = 15;
   const baseMoneyCost = 30;
+  const expMultiplier = getSkillExpMultiplier(state, skillId);
   let totalCost = 0;
   let totalExpGained = 0;
   let sessions = 0;
   let level = currentLevel;
   let simulatedExp = currentExp;
   
-  // Simulate training sessions until we reach next level
+  // Simulate training sessions until we reach next level (apply multiplier like trainSkillToNextLevel)
   while (level < currentLevel + 1 && level < MAX_SKILL_LEVEL) {
     const moneyCost = baseMoneyCost + level * 5;
     const expGained = Math.max(1, Math.floor(moneyCost * (1 - level * 0.005)));
+    const expWithMultiplier = Math.floor(expGained * expMultiplier);
     
     totalCost += moneyCost;
-    totalExpGained += expGained;
-    simulatedExp += expGained;
+    totalExpGained += expWithMultiplier;
+    simulatedExp += expWithMultiplier;
     sessions++;
     
-    // Check if we leveled up during training
     const newLevel = getLevelFromExp(simulatedExp);
     if (newLevel > level) {
       level = newLevel;
-      // If we've reached the target level, we're done
       if (level >= currentLevel + 1) {
         break;
       }
     }
   }
   
-  // Calculate days needed: total energy, energy restored per day (End Day), and days to next level
-  const ENERGY_RESTORED_PER_DAY = 100; // End Day restores to full
+  const energyRestoredPerDay = getMaxEnergy(state);
   const totalEnergyNeeded = sessions * energyCost;
-  const sessionsPerDay = Math.floor(ENERGY_RESTORED_PER_DAY / energyCost); // 6 sessions per full day
-  const currentEnergy = state.cheats?.unlimitedEnergy ? 100 : (state.player?.energy ?? 0);
+  const sessionsPerDay = Math.floor(energyRestoredPerDay / energyCost);
+  const currentEnergy = state.cheats?.unlimitedEnergy ? getMaxEnergy(state) : (state.player?.energy ?? 0);
   const sessionsDoableToday = Math.floor(currentEnergy / energyCost);
   let days;
   if (sessionsDoableToday >= sessions) {
-    days = 0; // Can finish in current day = less than 1 day
+    days = 0;
   } else {
     const remainingSessions = sessions - sessionsDoableToday;
     days = Math.ceil(remainingSessions / sessionsPerDay);
@@ -487,14 +573,15 @@ export function calculateTrainToNextLevel(state, skillId) {
     totalCost,
     days,
     totalEnergyNeeded,
-    energyRestoredPerDay: ENERGY_RESTORED_PER_DAY,
+    energyRestoredPerDay,
+    totalExpGained,
   };
 }
 
 export function canTakeJob(state, job) {
   const missing = [];
   for (const [skillId, requiredLevel] of Object.entries(job.requiredSkills)) {
-    const current = getSkillLevel(state, skillId);
+    const current = getEffectiveSkillLevel(state, skillId);
     if (current < requiredLevel) {
       missing.push({ skillId, requiredLevel, current });
     }
@@ -656,7 +743,10 @@ export function workShift(state, jobId) {
   }
 
   // Check energy requirement (bypass if unlimited energy cheat is enabled)
-  if (!state.cheats?.unlimitedEnergy && state.player.energy < 15) {
+  const workEnergyCost = 20;
+  const maxEnergy = getMaxEnergy(state);
+  const effectiveEnergy = Math.min(state.player.energy ?? 0, maxEnergy);
+  if (!state.cheats?.unlimitedEnergy && effectiveEnergy < workEnergyCost) {
     pushLog(
       state,
       "You're too exhausted to work another shift. Get some rest first."
@@ -665,15 +755,19 @@ export function workShift(state, jobId) {
   }
 
   const baseIncome = job.incomePerShift;
-  const energyCost = 20;
+  const energyCost = workEnergyCost;
 
   // Only decrease energy if unlimited energy cheat is not enabled
   if (!state.cheats?.unlimitedEnergy) {
-    state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+    state.player.energy = clamp(state.player.energy - energyCost, 0, maxEnergy);
   } else {
-    state.player.energy = 100;
+    state.player.energy = maxEnergy;
   }
   advanceTime(state, energyCost);
+
+  // Clear previous result so the shift menu only shows this shift's outcome
+  state.lastShiftResult = null;
+  const moneyBeforeShift = state.player.money;
 
   const quality = rollShiftQuality();
   const jobEvents = SHIFT_EVENTS[job.id];
@@ -683,8 +777,11 @@ export function workShift(state, jobId) {
   let notorietyMod = 0;
 
   if (quality === SHIFT_QUALITIES.NORMAL || !jobEvents || !jobEvents[quality]) {
-    // Normal shift: base pay only, and for illegal jobs possible bust
-    description = `You work a regular shift as ${job.name} and earn your usual pay.`;
+    // Normal shift: base pay only, and for illegal jobs possible bust. All copy from shiftEvents.
+    const normal = SHIFT_NORMAL_OUTCOMES;
+    const fill = (template, moneyVal = baseIncome) =>
+      template.replace(/\{jobName\}/g, job.name).replace(/\{money\}/g, formatMoney(moneyVal));
+
     if (job.category === SHIFT_CATEGORIES.ILLEGAL) {
       const notorietyGain = Math.round(job.risk / 8);
       state.player.notoriety = clamp(
@@ -696,29 +793,36 @@ export function workShift(state, jobId) {
       if (Math.random() < bustedChance) {
         const fine = Math.min(state.player.money, baseIncome * 2);
         state.player.money -= fine;
+        const bustNotoriety = normal.illegal.busted.notorietyMod;
         state.player.notoriety = clamp(
-          state.player.notoriety + 10,
+          state.player.notoriety + bustNotoriety,
           0,
           100
         );
-        description = `You get busted running ${job.name}. You pay a fine and your take is reduced.`;
+        description = fill(normal.illegal.busted.description);
+        const netBusted = baseIncome - fine;
         state.player.money += baseIncome; // we hadn't added yet; net is baseIncome - fine
         pushLog(state, description);
         state.lastShiftResult = {
           jobId: job.id,
           jobName: job.name,
           quality,
+          busted: true,
+          moneyBeforeShift,
           description,
-          effects: buildShiftEffects(baseIncome, -fine, {}, 10, job),
+          effects: buildShiftEffects(baseIncome, -fine, {}, bustNotoriety, job),
+          moneyDelta: netBusted,
         };
         state.requestOpenShiftMenu = true;
         return state;
       }
+      description = fill(normal.illegal.clean.description);
       state.player.money += baseIncome;
-      pushLog(state, `You run a risky ${job.name} shift and make $${baseIncome} without getting caught.`);
+      pushLog(state, description);
     } else {
+      description = fill(normal.legal.descriptionWithPay);
       state.player.money += baseIncome;
-      pushLog(state, `You work a shift as ${job.name} and earn $${baseIncome}.`);
+      pushLog(state, description);
     }
     // Base skill gain for normal shift (fixed base amount, no scaling)
     const skillToRaise = Object.keys(job.requiredSkills)[0] || SKILL_IDS.CHARISMA;
@@ -731,8 +835,10 @@ export function workShift(state, jobId) {
       jobId: job.id,
       jobName: job.name,
       quality,
+      moneyBeforeShift,
       description,
       effects: buildShiftEffects(baseIncome, 0, skillExpMod, job.category === SHIFT_CATEGORIES.ILLEGAL ? Math.round(job.risk / 8) : 0, job),
+      moneyDelta: baseIncome,
     };
     state.requestOpenShiftMenu = true;
     return state;
@@ -742,11 +848,17 @@ export function workShift(state, jobId) {
   const events = jobEvents[quality];
   const event = events[Math.floor(Math.random() * events.length)];
   description = event.description;
+  const moneyModProvided = event.moneyMod !== undefined;
   moneyMod = event.moneyMod ?? 0;
   skillExpMod = event.skillExpMod ? { ...event.skillExpMod } : {};
   notorietyMod = event.notorietyMod ?? 0;
 
-  const totalMoney = baseIncome + moneyMod;
+  // Bad/very bad: if moneyMod omitted → base pay only (and skillExpMod applies). If moneyMod provided → no base pay, penalty only.
+  // Good/very good: earn base pay + bonus (moneyMod)
+  const isBadOutcome = quality === SHIFT_QUALITIES.BAD || quality === SHIFT_QUALITIES.VERY_BAD;
+  const totalMoney = isBadOutcome
+    ? (moneyModProvided ? moneyMod : baseIncome)
+    : baseIncome + moneyMod;
   state.player.money += totalMoney;
 
   if (job.category === SHIFT_CATEGORIES.ILLEGAL) {
@@ -767,10 +879,12 @@ export function workShift(state, jobId) {
     jobId: job.id,
     jobName: job.name,
     quality,
+    moneyBeforeShift,
     description,
+    moneyDelta: totalMoney,
     effects: buildShiftEffects(
-      baseIncome,
-      moneyMod,
+      isBadOutcome ? (moneyModProvided ? 0 : baseIncome) : baseIncome,
+      isBadOutcome && moneyModProvided ? moneyMod : (isBadOutcome ? 0 : moneyMod),
       skillExpMod,
       job.category === SHIFT_CATEGORIES.ILLEGAL ? Math.round(job.risk / 8) + notorietyMod : notorietyMod,
       job
@@ -795,7 +909,9 @@ export function trainSkill(state, skillId) {
   const moneyCost = baseMoneyCost + currentLevel * 5;
 
   // Check energy requirement (bypass if unlimited energy cheat is enabled)
-  if (!state.cheats?.unlimitedEnergy && state.player.energy < energyCost) {
+  const maxEnergyTrain = getMaxEnergy(state);
+  const effectiveEnergyTrain = Math.min(state.player.energy ?? 0, maxEnergyTrain);
+  if (!state.cheats?.unlimitedEnergy && effectiveEnergyTrain < energyCost) {
     pushLog(state, "You're too tired to train right now.");
     return state;
   }
@@ -809,14 +925,15 @@ export function trainSkill(state, skillId) {
 
   // Only decrease energy if unlimited energy cheat is not enabled
   if (!state.cheats?.unlimitedEnergy) {
-    state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+    state.player.energy = clamp(state.player.energy - energyCost, 0, maxEnergyTrain);
   } else {
-    state.player.energy = 100; // Keep at max if unlimited energy is enabled
+    state.player.energy = maxEnergyTrain; // Keep at max if unlimited energy is enabled
   }
   state.player.money -= moneyCost;
   
   // Calculate EXP gained: money spent determines EXP (1 EXP per $1 spent, with slight diminishing returns at higher levels)
-  const expGained = Math.max(1, Math.floor(moneyCost * (1 - currentLevel * 0.005))); // Slight diminishing returns
+  let expGained = Math.max(1, Math.floor(moneyCost * (1 - currentLevel * 0.005))); // Slight diminishing returns
+  expGained = Math.floor(expGained * getSkillExpMultiplier(state, skillId));
   const currentExp = getSkillExp(state, skillId);
   const newExp = currentExp + expGained;
   const newLevel = getLevelFromExp(newExp);
@@ -888,27 +1005,29 @@ export function trainSkillToNextLevel(state, skillId) {
       return state;
     }
     
+    const maxEnergy = getMaxEnergy(state);
     // If we don't have enough energy, advance the day to rest (unless unlimited energy is enabled)
     if (!state.cheats?.unlimitedEnergy && state.player.energy < energyCost) {
       // Advance day to rest and restore energy
       advanceDay(state);
       // Fully restore energy after resting
-      state.player.energy = 100;
+      state.player.energy = getMaxEnergy(state);
       pushLog(state, `You rest for the night and wake up refreshed, ready to continue training.`);
     } else if (state.cheats?.unlimitedEnergy) {
       // Keep energy at max if unlimited energy is enabled
-      state.player.energy = 100;
+      state.player.energy = maxEnergy;
     }
     
     state.player.money -= moneyCost;
     // Only decrease energy if unlimited energy cheat is not enabled
     if (!state.cheats?.unlimitedEnergy) {
-      state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+      state.player.energy = clamp(state.player.energy - energyCost, 0, maxEnergy);
     } else {
-      state.player.energy = 100; // Keep at max if unlimited energy is enabled
+      state.player.energy = maxEnergy; // Keep at max if unlimited energy is enabled
     }
     totalCost += moneyCost;
-    totalExpGained += expGained;
+    const expMultiplier = getSkillExpMultiplier(state, skillId);
+    totalExpGained += Math.floor(expGained * expMultiplier);
     sessions++;
     
     // Advance time
@@ -1014,11 +1133,12 @@ export function advanceDay(state) {
     }
   }
 
-  // Only increase energy if unlimited energy cheat is not enabled (it will stay at 100 anyway)
+  // Only increase energy if unlimited energy cheat is not enabled (it will stay at max anyway)
+  const maxEnergy = getMaxEnergy(state);
   if (!state.cheats?.unlimitedEnergy) {
-    state.player.energy = clamp(state.player.energy + 30, 0, 100);
+    state.player.energy = clamp(state.player.energy + 30, 0, maxEnergy);
   } else {
-    state.player.energy = 100; // Keep at max if unlimited energy is enabled
+    state.player.energy = maxEnergy; // Keep at max if unlimited energy is enabled
   }
 
   if (state.player.notoriety > 40 && Math.random() < 0.1) {
@@ -1036,7 +1156,7 @@ export function advanceDay(state) {
   }
 
   if (state.player.money < 0) {
-    state.player.health = clamp(state.player.health - 3, 0, 100);
+    state.player.health = clamp(state.player.health - 3, 0, getMaxHealth(state));
   }
 
   if (state.player.health <= 0) {
@@ -1108,7 +1228,9 @@ export function travelToLocation(state, cityId, areaId) {
   }
 
   // Check energy requirement (bypass if unlimited energy cheat is enabled)
-  if (!isInterCity && !state.cheats?.unlimitedEnergy && state.player.energy < energyCost) {
+  const travelMaxEnergy = getMaxEnergy(state);
+  const travelEffectiveEnergy = Math.min(state.player.energy ?? 0, travelMaxEnergy);
+  if (!isInterCity && !state.cheats?.unlimitedEnergy && travelEffectiveEnergy < energyCost) {
     pushLog(state, `You need ${energyCost} energy to travel within the city. You're too tired.`);
     return { success: false, state };
   }
@@ -1126,20 +1248,20 @@ export function travelToLocation(state, cityId, areaId) {
   };
 
   // Inter-city travel: advance day, refill energy, trigger auto-save
+  const maxEnergy = isInterCity ? getMaxEnergy(state) : travelMaxEnergy;
   if (isInterCity) {
     state.currentDay += 1;
     state.currentTime = START_TIME_MINUTES; // Reset to 9:00 AM
-    state.player.energy = 100; // Full energy after sleeping during travel
+    state.player.energy = maxEnergy; // Full energy after sleeping during travel
     pushLog(state, `You travel from ${oldCity.name} to ${city.name}, arriving in the ${area.name} the next day. Cost: $${travelCost}. You feel refreshed after the journey.`);
     return { success: true, state, shouldAutoSave: true };
   } else {
     // Intra-city travel: use energy
-    // Only decrease energy if unlimited energy cheat is not enabled
     if (!state.cheats?.unlimitedEnergy) {
-      state.player.energy = clamp(state.player.energy - energyCost, 0, 100);
+      state.player.energy = clamp(state.player.energy - energyCost, 0, maxEnergy);
       pushLog(state, `You travel to the ${area.name} in ${city.name}. Cost: $${travelCost}, Energy: -${energyCost}`);
     } else {
-      state.player.energy = 100; // Keep at max if unlimited energy is enabled
+      state.player.energy = maxEnergy; // Keep at max if unlimited energy is enabled
       pushLog(state, `You travel to the ${area.name} in ${city.name}. Cost: $${travelCost}`);
     }
     return { success: true, state, shouldAutoSave: false };
@@ -1223,6 +1345,39 @@ export function getItemSlotOrCategoryLabel(item) {
   if (item.category === ITEM_CATEGORIES.CONSUMABLES) return "Consumable";
   if (item.category) return item.category.charAt(0).toUpperCase() + item.category.slice(1);
   return null;
+}
+
+/** Returns an array of bonus description lines for an item (for shop, inventory, equipment tooltips). */
+export function getItemBonusLines(item) {
+  if (!item) return [];
+  const lines = [];
+  if (item.energyBonus != null && item.energyBonus > 0) {
+    lines.push(`+${item.energyBonus} Max Energy`);
+  }
+  if (item.healthBonus != null && item.healthBonus > 0) {
+    lines.push(`+${item.healthBonus} Max Health`);
+  }
+  if (item.skillLevelBonus && typeof item.skillLevelBonus === "object") {
+    for (const [skillId, levels] of Object.entries(item.skillLevelBonus)) {
+      if (levels > 0) {
+        const name = BASE_SKILLS.find((s) => s.id === skillId)?.name ?? skillId;
+        lines.push(`+${levels} ${name} (level when equipped)`);
+      }
+    }
+  }
+  if (item.skillExpBonus && typeof item.skillExpBonus === "object") {
+    for (const [skillId, mult] of Object.entries(item.skillExpBonus)) {
+      if (mult > 1) {
+        const name = BASE_SKILLS.find((s) => s.id === skillId)?.name ?? skillId;
+        const pct = Math.round((mult - 1) * 100);
+        lines.push(`+${pct}% ${name} XP when training`);
+      }
+    }
+  }
+  if (item.inventoryBonus != null && item.inventoryBonus > 0) {
+    lines.push(`+${item.inventoryBonus} inventory slots`);
+  }
+  return lines;
 }
 
 // Base inventory size (pockets)

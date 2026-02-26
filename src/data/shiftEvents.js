@@ -29,11 +29,15 @@ export const SHIFT_EVENTS = {
       { description: "A customer throws food at you and the manager blames you. You're docked pay and leave feeling humiliated.", moneyMod: -25, skillExpMod: { [SKILL_IDS.CHARISMA]: -20 } },
       { description: "The fryer malfunctions and you burn your hand. You finish the shift in pain and get written up.", moneyMod: -20, skillExpMod: { [SKILL_IDS.CHARISMA]: -20 } },
       { description: "You accidentally short the register and have to cover the difference out of your pocket.", moneyMod: -30, skillExpMod: { [SKILL_IDS.CHARISMA]: -20 } },
+      { description: "The register is way short and the manager holds you liable. You pay back the difference and leave with nothing.", moneyMod: -65, skillExpMod: { [SKILL_IDS.CHARISMA]: -20 } },
+      { description: "Everything that could go wrong does. You get your base pay and leave with your confidence shot.", skillExpMod: { [SKILL_IDS.CHARISMA]: -20 } },
     ],
     [SHIFT_QUALITIES.BAD]: [
       { description: "A rush never stops. You leave exhausted with no tip jar to show for it.", moneyMod: -10, skillExpMod: { [SKILL_IDS.CHARISMA]: -10 } },
-      { description: "A coworker no-call-no-shows and you have to cover their station. No extra pay.", moneyMod: 0, skillExpMod: { [SKILL_IDS.CHARISMA]: -10 } },
+      { description: "A coworker no-call-no-shows and you have to cover their station. No extra pay.", skillExpMod: { [SKILL_IDS.CHARISMA]: -10 } },
       { description: "The health inspector drops by and everyone is stressed. You get a stern talking-to for a minor slip.", moneyMod: -15, skillExpMod: { [SKILL_IDS.CHARISMA]: -10 } },
+      { description: "You mix up an order and the customer demands a full refund. The manager takes it from your pay.", moneyMod: -65, skillExpMod: { [SKILL_IDS.CHARISMA]: -10 } },
+      { description: "You show up but everything goes wrong. You get your base pay and leave with your confidence shaken.", skillExpMod: { [SKILL_IDS.CHARISMA]: -10 } },
     ],
     [SHIFT_QUALITIES.GOOD]: [
       { description: "A regular leaves a generous tip and tells the manager you're the best. You get a small bonus.", moneyMod: 25, skillExpMod: { [SKILL_IDS.CHARISMA]: 20 } },
@@ -51,11 +55,15 @@ export const SHIFT_EVENTS = {
       { description: "You get jumped and lose product and cash. You're lucky to walk away.", moneyMod: -120, notorietyMod: 15, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20 } },
       { description: "A deal goes bad and you have to pay off the wrong people to stay safe.", moneyMod: -150, notorietyMod: 10, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20 } },
       { description: "Cops sweep the block. You ditch the stash but lose the night's take.", moneyMod: -100, notorietyMod: 20, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20 } },
+      { description: "A rip-off and a beatdown. You lose the product, the cash, and pay to keep your mouth shut.", moneyMod: -300, notorietyMod: 25, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20 } },
+      { description: "A brutal night. You make it out with base take but your judgment feels off.", notorietyMod: 10, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20 } },
     ],
     [SHIFT_QUALITIES.BAD]: [
       { description: "A buyer flakes and you're stuck holding product in a hot spot. You sell at a loss.", moneyMod: -50, notorietyMod: 5, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10 } },
       { description: "Word gets out you're short. Your rep takes a hit and so does your pocket.", moneyMod: -40, notorietyMod: 8, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10 } },
       { description: "You have to lay low after a close call. Fewer sales, same risk.", moneyMod: -60, notorietyMod: 3, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10 } },
+      { description: "Product gets seized and you have to pay your connect back. You're out of pocket for the shift.", moneyMod: -290, notorietyMod: 10, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10 } },
+      { description: "A slow night and a few near-misses. You get paid but your instincts feel rusty.", notorietyMod: 5, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10 } },
     ],
     [SHIFT_QUALITIES.GOOD]: [
       { description: "A big client sends friends. You move volume and stay under the radar.", moneyMod: 80, notorietyMod: -2, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: 20, [SKILL_IDS.CHARISMA]: 20 } },
@@ -73,11 +81,15 @@ export const SHIFT_EVENTS = {
       { description: "You twist your back lifting bales. The farmer sends you home with half pay and a warning.", moneyMod: -35, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
       { description: "A storm ruins part of the crop you were supposed to protect. The boss docks your pay.", moneyMod: -40, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
       { description: "Equipment breaks on your watch. You're blamed and lose a day's wage.", moneyMod: -30, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
+      { description: "You damage equipment and the farmer deducts the repair cost from your pay. You leave in the red.", moneyMod: -85, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
+      { description: "A miserable day. You collect base pay but the farmer makes it clear you're on thin ice.", skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
     ],
     [SHIFT_QUALITIES.BAD]: [
       { description: "The heat is brutal and you slow down. The farmer isn't happy but you get base pay.", moneyMod: -15, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
       { description: "You mix up two fields and waste half the morning. No bonus this week.", moneyMod: -10, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
       { description: "Animals get loose and you spend the shift rounding them up. Exhausting and unrewarding.", moneyMod: -20, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
+      { description: "You break a gate and a few animals get out. The farmer docks you for the repair and the lost time.", moneyMod: -80, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
+      { description: "You finish the shift but the farmer isn't impressed. You get your pay and a warning to sharpen up.", skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
     ],
     [SHIFT_QUALITIES.GOOD]: [
       { description: "You finish the north field early and the farmer pays you a bonus for the extra acre.", moneyMod: 30, skillExpMod: { [SKILL_IDS.STRENGTH]: 20 } },
@@ -95,11 +107,15 @@ export const SHIFT_EVENTS = {
       { description: "You get written up for a safety violation you didn't commit. The union rep is busy; you eat the fine.", moneyMod: -35, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
       { description: "The line jams and supervisors blame your station. You're docked and sent home early.", moneyMod: -40, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
       { description: "A piece of equipment injures your hand. You finish the shift but lose pay for 'incident' paperwork.", moneyMod: -45, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
+      { description: "You cause a stoppage and damaged product. The cost comes out of your check and then some.", moneyMod: -100, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
+      { description: "A disastrous shift. You get base pay but the foreman's look says it all.", skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
     ],
     [SHIFT_QUALITIES.BAD]: [
       { description: "Overtime is cancelled at the last minute. You needed that extra cash.", moneyMod: -20, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
       { description: "You're put on the worst station and can't hit rate. No bonus, just frowns.", moneyMod: -15, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
       { description: "The foreman is in a mood. Everyone gets nitpicked; you get an extra task and no thanks.", moneyMod: -10, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
+      { description: "You scrap a batch and the foreman docks you for materials. You leave owing.", moneyMod: -95, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
+      { description: "You clock in and get the job done, but the foreman notes your numbers are off. Base pay only.", skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
     ],
     [SHIFT_QUALITIES.GOOD]: [
       { description: "You hit rate early and help others catch up. The foreman notes it and you get a small bonus.", moneyMod: 25, skillExpMod: { [SKILL_IDS.STRENGTH]: 20 } },
@@ -117,11 +133,15 @@ export const SHIFT_EVENTS = {
       { description: "You mis-ship a pallet and the client complains. The cost comes out of your check.", moneyMod: -35, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
       { description: "You pull your back and have to sit out half the shift. Half pay and a write-up.", moneyMod: -40, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
       { description: "Inventory is off and they blame your zone. You're docked and put on probation.", moneyMod: -30, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
+      { description: "A wrong shipment goes out and the client demands compensation. It's taken from your pay.", moneyMod: -95, skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
+      { description: "Chaos all shift. You get your base pay but your performance review will hurt.", skillExpMod: { [SKILL_IDS.STRENGTH]: -20 } },
     ],
     [SHIFT_QUALITIES.BAD]: [
       { description: "The dock is chaos and you're stuck doing someone else's picks. No extra pay.", moneyMod: -15, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
       { description: "Equipment is broken and you lose time waiting. Your numbers look bad.", moneyMod: -20, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
       { description: "A supervisor rides you all shift. You leave tired and underappreciated.", moneyMod: -10, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
+      { description: "You damage a load and the client charges back. The cost is deducted from your pay.", moneyMod: -90, skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
+      { description: "You get through the shift but your pick rate is below standard. You collect base pay and a talking-to.", skillExpMod: { [SKILL_IDS.STRENGTH]: -10 } },
     ],
     [SHIFT_QUALITIES.GOOD]: [
       { description: "You clear a backlog that's been sitting. The supervisor gives you a bonus and a nod.", moneyMod: 28, skillExpMod: { [SKILL_IDS.STRENGTH]: 20 } },
@@ -139,11 +159,15 @@ export const SHIFT_EVENTS = {
       { description: "A deal turns into a rip. You lose product and barely escape. Your rep and wallet take a hit.", moneyMod: -200, notorietyMod: 25, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20, [SKILL_IDS.BUSINESS]: -20 } },
       { description: "Law enforcement gets too close. You burn the stash and eat the loss.", moneyMod: -180, notorietyMod: 30, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20, [SKILL_IDS.BUSINESS]: -20 } },
       { description: "A buyer turns out to be an informant. You lose the shipment and have to lay low.", moneyMod: -220, notorietyMod: 20, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20, [SKILL_IDS.BUSINESS]: -20 } },
+      { description: "A sting goes bad. You lose the inventory and pay a heavy price to stay out of cuffs.", moneyMod: -500, notorietyMod: 35, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20, [SKILL_IDS.BUSINESS]: -20 } },
+      { description: "You barely scrape through. Base take, but your instincts took a hit.", notorietyMod: 15, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -20, [SKILL_IDS.BUSINESS]: -20 } },
     ],
     [SHIFT_QUALITIES.BAD]: [
       { description: "A shipment is delayed and you can't fulfill. You refund and lose margin.", moneyMod: -80, notorietyMod: 5, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10, [SKILL_IDS.BUSINESS]: -10 } },
       { description: "A competitor undercuts you and you have to drop price to move product.", moneyMod: -100, notorietyMod: 0, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10, [SKILL_IDS.BUSINESS]: -10 } },
       { description: "Heat is up and you have to move through a middleman. Their cut hurts.", moneyMod: -90, notorietyMod: 8, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10, [SKILL_IDS.BUSINESS]: -10 } },
+      { description: "A deal falls through and you're stuck with product you can't move. You eat the loss.", moneyMod: -460, notorietyMod: 15, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10, [SKILL_IDS.BUSINESS]: -10 } },
+      { description: "You close a small deal but your timing was off and you drew attention. Base take, bruised rep.", notorietyMod: 8, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: -10, [SKILL_IDS.BUSINESS]: -10 } },
     ],
     [SHIFT_QUALITIES.GOOD]: [
       { description: "A serious buyer commits to a bulk order. You negotiate a premium and deliver clean.", moneyMod: 120, notorietyMod: -3, skillExpMod: { [SKILL_IDS.STREET_SMARTS]: 20, [SKILL_IDS.BUSINESS]: 20 } },
@@ -161,11 +185,15 @@ export const SHIFT_EVENTS = {
       { description: "A suspect resists and you're injured. You're on desk duty and the union is fighting your comp.", moneyMod: -50, skillExpMod: { [SKILL_IDS.STRENGTH]: -20, [SKILL_IDS.LAW]: -20 } },
       { description: "A complaint is filed and Internal Affairs gets involved. You're suspended with pay—but the stress costs you.", moneyMod: -30, skillExpMod: { [SKILL_IDS.STRENGTH]: -20, [SKILL_IDS.LAW]: -20 } },
       { description: "You miss a critical detail and a perp walks. The captain reams you and you lose overtime.", moneyMod: -40, skillExpMod: { [SKILL_IDS.STRENGTH]: -20, [SKILL_IDS.LAW]: -20 } },
+      { description: "A lawsuit names you and the department settles. Your share of the deduction wipes out your check.", moneyMod: -175, skillExpMod: { [SKILL_IDS.STRENGTH]: -20, [SKILL_IDS.LAW]: -20 } },
+      { description: "You survive the shift but your judgment is questioned. You take base pay and a blow to your confidence.", skillExpMod: { [SKILL_IDS.STRENGTH]: -20, [SKILL_IDS.LAW]: -20 } },
     ],
     [SHIFT_QUALITIES.BAD]: [
       { description: "Paperwork pile-up. You spend the shift at the desk and get nothing extra.", moneyMod: -20, skillExpMod: { [SKILL_IDS.STRENGTH]: -10, [SKILL_IDS.LAW]: -10 } },
       { description: "A call goes bad and you have to de-escalate for hours. You're drained and underappreciated.", moneyMod: -15, skillExpMod: { [SKILL_IDS.STRENGTH]: -10, [SKILL_IDS.LAW]: -10 } },
       { description: "Politicians are in the building. Everyone is on edge and you get the worst assignments.", moneyMod: -25, skillExpMod: { [SKILL_IDS.STRENGTH]: -10, [SKILL_IDS.LAW]: -10 } },
+      { description: "You're named in a complaint and the department deducts legal fees from your pay.", moneyMod: -170, skillExpMod: { [SKILL_IDS.STRENGTH]: -10, [SKILL_IDS.LAW]: -10 } },
+      { description: "You work a rough shift and second-guess a few decisions. You get paid but leave doubting yourself.", skillExpMod: { [SKILL_IDS.STRENGTH]: -10, [SKILL_IDS.LAW]: -10 } },
     ],
     [SHIFT_QUALITIES.GOOD]: [
       { description: "You defuse a situation without force and the sergeant puts you in for a commendation. Small bonus.", moneyMod: 35, skillExpMod: { [SKILL_IDS.STRENGTH]: 20, [SKILL_IDS.LAW]: 20 } },
@@ -183,11 +211,15 @@ export const SHIFT_EVENTS = {
       { description: "You miss a filing deadline and the client threatens to sue you. You cover the cost and your reputation dips.", moneyMod: -80, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.LAW]: -20 } },
       { description: "A judge tears into your argument. You leave court humiliated and the client is talking about malpractice.", moneyMod: -70, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.LAW]: -20 } },
       { description: "A key witness flips and your case collapses. The client demands a refund and you oblige.", moneyMod: -90, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.LAW]: -20 } },
+      { description: "You lose a big case and the client demands a refund plus damages. The firm takes it from your draw.", moneyMod: -290, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.LAW]: -20 } },
+      { description: "A crushing day in court. You still get paid but your reputation in the firm takes a hit.", skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.LAW]: -20 } },
     ],
     [SHIFT_QUALITIES.BAD]: [
       { description: "A long deposition goes nowhere. You bill the hours but the partner isn't impressed.", moneyMod: -30, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.LAW]: -10 } },
       { description: "Opposing counsel outmaneuvers you in discovery. You spend the night catching up for free.", moneyMod: -25, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.LAW]: -10 } },
       { description: "A client is unhappy with the strategy. You smooth it over but take a fee cut.", moneyMod: -40, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.LAW]: -10 } },
+      { description: "A client demands a refund and the firm charges it back to you. You're in the red for the week.", moneyMod: -275, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.LAW]: -10 } },
+      { description: "You put in the hours but your argumentation was weak. The partner pays you but isn't happy.", skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.LAW]: -10 } },
     ],
     [SHIFT_QUALITIES.GOOD]: [
       { description: "You win a motion and the partner shares the credit and a bonus.", moneyMod: 50, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: 20, [SKILL_IDS.LAW]: 20 } },
@@ -205,11 +237,15 @@ export const SHIFT_EVENTS = {
       { description: "A scandal breaks and your name is in the mix. Donors pull back and you have to return a contribution.", moneyMod: -150, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.CHARISMA]: -20, [SKILL_IDS.LAW]: -20 } },
       { description: "You flub a major speech and the clips go viral. Your team has to spend to fix the narrative.", moneyMod: -120, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.CHARISMA]: -20, [SKILL_IDS.LAW]: -20 } },
       { description: "A policy backfires and you're in damage control. You dig into your own pocket to fund a fix.", moneyMod: -180, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.CHARISMA]: -20, [SKILL_IDS.LAW]: -20 } },
+      { description: "A major donor demands their money back and goes public. You return the funds and pay for the fallout.", moneyMod: -550, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.CHARISMA]: -20, [SKILL_IDS.LAW]: -20 } },
+      { description: "A terrible day. You keep your salary but your standing in the party is damaged.", skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -20, [SKILL_IDS.CHARISMA]: -20, [SKILL_IDS.LAW]: -20 } },
     ],
     [SHIFT_QUALITIES.BAD]: [
       { description: "A long day of meetings with no wins. You leave with nothing to show but fatigue.", moneyMod: -60, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.CHARISMA]: -10, [SKILL_IDS.LAW]: -10 } },
       { description: "Opposition blocks your initiative. You burn political capital and get no progress.", moneyMod: -50, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.CHARISMA]: -10, [SKILL_IDS.LAW]: -10 } },
       { description: "A donor meeting goes sideways. You keep the relationship but lose a check.", moneyMod: -70, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.CHARISMA]: -10, [SKILL_IDS.LAW]: -10 } },
+      { description: "A major donor pulls out and demands a return. You wire the money back and cover the shortfall.", moneyMod: -510, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.CHARISMA]: -10, [SKILL_IDS.LAW]: -10 } },
+      { description: "You fumble a speech and the room goes cold. You still draw your pay but your standing takes a hit.", skillExpMod: { [SKILL_IDS.INTELLIGENCE]: -10, [SKILL_IDS.CHARISMA]: -10, [SKILL_IDS.LAW]: -10 } },
     ],
     [SHIFT_QUALITIES.GOOD]: [
       { description: "You sign a popular bill and the polls move. A donor sends a thank-you contribution.", moneyMod: 100, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: 20, [SKILL_IDS.CHARISMA]: 20, [SKILL_IDS.LAW]: 20 } },
@@ -221,5 +257,22 @@ export const SHIFT_EVENTS = {
       { description: "You win a major legislative fight. Your party rewards you with a speaking slot and a bonus.", moneyMod: 180, skillExpMod: { [SKILL_IDS.CHARISMA]: 30, [SKILL_IDS.LAW]: 30 } },
       { description: "A crisis hits and you lead. Your approval soars and so does your campaign fund.", moneyMod: 220, skillExpMod: { [SKILL_IDS.INTELLIGENCE]: 30, [SKILL_IDS.CHARISMA]: 30 } },
     ],
+  },
+};
+
+/** Normal-shift outcome messages (no quality roll). Use {jobName} and {money} placeholders; gameCore replaces them. */
+export const SHIFT_NORMAL_OUTCOMES = {
+  legal: {
+    description: "You work a regular shift as {jobName} and earn your usual pay.",
+    descriptionWithPay: "You work a shift as {jobName} and earn {money}.",
+  },
+  illegal: {
+    busted: {
+      description: "You get busted running {jobName}. You pay a fine and your take is reduced.",
+      notorietyMod: 10,
+    },
+    clean: {
+      description: "You run a risky {jobName} shift and make {money} without getting caught.",
+    },
   },
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { BASE_SKILLS, BASE_BUSINESSES, BASE_ITEMS, CITIES, CITY_AREAS, MAX_SKILL_LEVEL, getExpForLevel, getSkillLevel, spawnItem } from "../gameCore.js";
+import { BASE_SKILLS, BASE_BUSINESSES, BASE_ITEMS, CITIES, CITY_AREAS, MAX_SKILL_LEVEL, getExpForLevel, getSkillLevel, getMaxEnergy, spawnItem } from "../gameCore.js";
 
 export function CheatMenu({ state, onClose, onApplyCheat }) {
   // Initialize cheats object if it doesn't exist and disable achievements when any cheat is used
@@ -28,15 +28,16 @@ export function CheatMenu({ state, onClose, onApplyCheat }) {
 
   const unlimitedEnergy = state?.cheats?.unlimitedEnergy || false;
 
-  // Keep energy at 100 when unlimited energy is enabled
+  // Keep energy at max when unlimited energy is enabled
   React.useEffect(() => {
-    if (unlimitedEnergy && state?.player && state.player.energy < 100) {
+    const max = state ? getMaxEnergy(state) : 100;
+    if (unlimitedEnergy && state?.player && state.player.energy < max) {
       onApplyCheat((s) => {
-        s.player.energy = 100;
+        s.player.energy = getMaxEnergy(s);
         return s;
       });
     }
-  }, [unlimitedEnergy, state?.player?.energy, onApplyCheat]);
+  }, [unlimitedEnergy, state?.player?.energy, state, onApplyCheat]);
 
   const handleAddCash = (amount) => {
     onApplyCheat((s) => {
@@ -52,9 +53,9 @@ export function CheatMenu({ state, onClose, onApplyCheat }) {
         s.cheats = {};
       }
       s.cheats.unlimitedEnergy = newValue;
-      // Set energy to 100 when enabling
+      // Set energy to max when enabling
       if (newValue) {
-        s.player.energy = 100;
+        s.player.energy = getMaxEnergy(s);
       }
       return s;
     });

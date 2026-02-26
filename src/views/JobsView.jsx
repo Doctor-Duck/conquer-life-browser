@@ -7,7 +7,8 @@ import {
   canTakeJob,
   canStartBusiness,
   formatMoney,
-  getSkillLevel,
+  getEffectiveSkillLevel,
+  getMaxEnergy,
   getShiftsForLocation,
   getBusinessesForLocation,
   getJobDisplayName,
@@ -129,7 +130,7 @@ export function JobsView({ state, onChangeFilter, onWorkShift, onStartBusiness }
               </div>
               <div className="pill">
                 <div className="pill-dot" />
-                Energy: {state.player.energy}/100
+                Energy: {Math.min(state.player.energy, getMaxEnergy(state))}/{getMaxEnergy(state)}
               </div>
             </div>
 
@@ -198,7 +199,7 @@ export function JobsView({ state, onChangeFilter, onWorkShift, onStartBusiness }
                                 const skillName =
                                   BASE_SKILLS.find((s) => s.id === skillId)?.name ??
                                   skillId;
-                                const current = getSkillLevel(state, skillId);
+                                const current = getEffectiveSkillLevel(state, skillId);
                                 const meets = current >= level;
                                 return (
                                   <div
@@ -317,7 +318,7 @@ export function JobsView({ state, onChangeFilter, onWorkShift, onStartBusiness }
                                 const skillName =
                                   BASE_SKILLS.find((s) => s.id === skillId)?.name ??
                                   skillId;
-                                const current = getSkillLevel(state, skillId);
+                                const current = getEffectiveSkillLevel(state, skillId);
                                 const meets = current >= level;
                                 return (
                                   <div

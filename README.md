@@ -60,10 +60,11 @@ Shifts are categorized as:
 
 **Work Shift flow**:
 - Click **Work Shift** in the Jobs view (Shifts tab) or in the Player Sidebar. Your shift is resolved immediately and the **Shift menu** opens.
-- The Shift menu shows: job name, **shift quality** (Very Bad, Bad, Normal, Good, Very Good), what happened during the shift, and rewards/penalties (money, skill EXP, notoriety for illegal work).
-- **Shift quality** is random: 60% Normal, 15% Good, 15% Bad, 5% Very Good, 5% Very Bad. Each non-Normal quality has multiple random events per shift type (e.g. tips, accidents, bonuses). Normal shifts give base EXP (no scaling), Good shifts give 2x base EXP, Very Good shifts give 3x base EXP, while Bad and Very Bad shifts reduce EXP.
-- Use **Work Another Shift** in the Shift menu to work again; the menu updates with the new result. Buttons are anchored at the bottom so the layout stays fixed.
-- **Close** dismisses the menu. Work Shift in the sidebar or Jobs view validates location (and city when the shift is city-specific) and energy before working.
+- The Shift menu shows: job name, **shift quality** (Very Bad, Bad, Normal, Good, Very Good; illegal jobs show **BUSTED** when you get caught), what happened during the shift, and rewards/penalties (money, skill EXP, notoriety for illegal work). Dismiss the menu by clicking the overlay or **Work Another Shift**.
+- **Shift quality** is random: 60% Normal, 15% Good, 15% Bad, 5% Very Good, 5% Very Bad. Each non-Normal quality has multiple random events per shift type (e.g. tips, accidents, bonuses). Normal shifts give base EXP (no scaling), Good shifts give 2x base EXP, Very Good shifts give 3x base EXP, while Bad and Very Bad shifts can reduce EXP or money.
+- **Bad / Very Bad pay**: If an event has a **moneyMod** (positive or negative), you earn *no* base pay—only the modifier is applied (e.g. a negative value is subtracted from your money). If **moneyMod** is *omitted* from the event, you earn **base pay** and only the event’s skill/notoriety effects apply (e.g. base pay + negative skill EXP).
+- Use **Work Another Shift** in the Shift menu to work again; the menu updates with the new result. Work Shift in the sidebar or Jobs view validates location (and city when the shift is city-specific) and energy before working.
+- The **Player Sidebar** shows a short-lived money delta (green for earn, red for spend/loss) after working a shift or spending money; the value and sign match the actual change.
 
 **Work Shift button (Player Sidebar)**:
 - Disabled when you're in the wrong area/city or have less than 15 energy

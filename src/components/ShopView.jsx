@@ -8,6 +8,7 @@ import {
   ITEM_CATEGORIES,
   BASE_INVENTORY_SIZE,
   getItemSlotOrCategoryLabel,
+  getItemBonusLines,
 } from "../gameCore.js";
 
 const CATEGORY_LABELS = {
@@ -148,12 +149,14 @@ export function ShopView({ state, onBuyItem, onClose }) {
                         <div className="shop-item-slot">{getItemSlotOrCategoryLabel(item)}</div>
                       )}
                       <div className="shop-item-description">{item.description}</div>
-                      {item.type === "bag" && item.inventoryBonus != null && (
-                        <div className="shop-item-bonus">
-                          <span className="shop-item-bonus-icon">📦</span>
-                          <span>
-                            Inventory: {BASE_INVENTORY_SIZE} → {BASE_INVENTORY_SIZE + item.inventoryBonus} slots
-                          </span>
+                      {getItemBonusLines(item).length > 0 && (
+                        <div className="shop-item-bonuses">
+                          {getItemBonusLines(item).map((line, i) => (
+                            <div key={i} className="shop-item-bonus">
+                              <span className="shop-item-bonus-icon">✨</span>
+                              <span>{line}</span>
+                            </div>
+                          ))}
                         </div>
                       )}
                       {isInArea ? (
